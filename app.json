@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/meds/index",
+    "pages/checkups/index",
+    "pages/stats/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "健康管理",
+    "navigationStyle": "default",
+    "navigationBarTextStyle": "black",
+    "backgroundTextStyle": "light",
+    "backgroundColor": "#F7F8FA"
+  },
+  "sitemapLocation": "sitemap.json"
+}
+

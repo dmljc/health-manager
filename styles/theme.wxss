@@ -1,0 +1,21 @@
+:root {
+  --color-bg: #F7F8FA;
+  --color-text: #1F2937;
+  --color-muted: #6B7280;
+  --color-primary: #2563EB;
+  --color-primary-weak: #EFF6FF;
+  --radius-lg: 16rpx;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 20rpx 28rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+

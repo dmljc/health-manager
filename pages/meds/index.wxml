@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">新增服药</view>
+    <view style="margin-top: 16rpx;">
+      <input placeholder="药物名称（如：替诺福韦）" bindinput="onName" />
+      <picker mode="time" value="{{time}}" start="00:00" end="23:59" bindchange="onTime">
+        <view class="picker">{{time || '选择时间'}}</view>
+      </picker>
+      <button class="btn-primary" bindtap="addMed">保存</button>
+    </view>
+  </view>
+
+  <view class="card" style="margin-top:24rpx;">
+    <view class="section-title">今日记录</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view style="margin-top: 16rpx;">{{item.time}} · {{item.name}}</view>
+    </block>
+  </view>
+</view>
+

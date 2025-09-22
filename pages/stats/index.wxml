@@ -1,0 +1,7 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">肝功能指标（ALT）</view>
+    <canvas type="2d" style="width:100%;height:300rpx;" canvas-id="altChart"></canvas>
+  </view>
+</view>
+

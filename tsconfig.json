@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "noImplicitAny": true,
+    "noEmitOnError": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/utils/*": ["utils/*"],
+      "@/models/*": ["models/*"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
+

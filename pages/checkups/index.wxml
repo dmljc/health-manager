@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">录入复查</view>
+    <picker mode="date" value="{{date}}" bindchange="onDate">
+      <view class="picker">{{date || '选择日期'}}</view>
+    </picker>
+    <input placeholder="ALT（U/L）" type="number" bindinput="onAlt" />
+    <input placeholder="AST（U/L）" type="number" bindinput="onAst" />
+    <button class="btn-primary" bindtap="save">保存</button>
+  </view>
+
+  <view class="card" style="margin-top:24rpx;">
+    <view class="section-title">历史复查</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view style="margin-top: 16rpx;">{{item.date}} · ALT {{item.alt}} · AST {{item.ast}}</view>
+    </block>
+  </view>
+</view>
+

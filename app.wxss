@@ -1,0 +1,28 @@
+@import "styles/theme.wxss";
+
+page {
+  background-color: #F7F8FA;
+  color: #1F2937;
+}
+
+.container {
+  padding: 16rpx 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
+  padding: 24rpx;
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #6B7280;
+}
+
