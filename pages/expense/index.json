@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "费用管理",
+  "backgroundColor": "#F7F8FA",
+  "enablePullDownRefresh": true,
+  "usingComponents": {}
+}

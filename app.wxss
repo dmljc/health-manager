@@ -26,3 +26,10 @@ page {
   color: #6B7280;
 }
 
+/* 全局触摸反馈：给任意可点击元素添加 hover-class="tap-active" 即可 */
+.tap-active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+  transition: transform .12s ease, filter .12s ease;
+}
+

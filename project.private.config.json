@@ -1,23 +1,35 @@
 {
-  "libVersion": "2.31.0",
-  "projectname": "health-manager",
-  "condition": {},
-  "setting": {
-    "urlCheck": true,
-    "coverView": false,
-    "lazyloadPlaceholderEnable": false,
-    "skylineRenderEnable": false,
-    "preloadBackgroundData": false,
-    "autoAudits": false,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "showShadowRootInWxmlPanel": false,
-    "useStaticServer": false,
-    "useLanDebug": false,
-    "showES6CompileOption": false,
-    "compileHotReLoad": true,
-    "checkInvalidKey": true,
-    "ignoreDevUnusedFiles": true,
-    "bigPackageSizeSupport": false
-  }
+    "libVersion": "3.10.0",
+    "projectname": "health-manager",
+    "condition": {
+        "miniprogram": {
+            "list": [
+                {
+                    "name": "pages/meds/index",
+                    "pathName": "pages/meds/index",
+                    "query": "",
+                    "scene": null,
+                    "launchMode": "default"
+                }
+            ]
+        }
+    },
+    "setting": {
+        "urlCheck": true,
+        "coverView": false,
+        "lazyloadPlaceholderEnable": false,
+        "skylineRenderEnable": false,
+        "preloadBackgroundData": false,
+        "autoAudits": false,
+        "useApiHook": true,
+        "useApiHostProcess": true,
+        "showShadowRootInWxmlPanel": false,
+        "useStaticServer": false,
+        "useLanDebug": false,
+        "showES6CompileOption": false,
+        "compileHotReLoad": true,
+        "checkInvalidKey": true,
+        "ignoreDevUnusedFiles": false,
+        "bigPackageSizeSupport": false
+    }
 }
