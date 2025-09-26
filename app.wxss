@@ -1,35 +1,34 @@
 @import "styles/theme.wxss";
 
 page {
-  background-color: #F7F8FA;
-  color: #1F2937;
+    background-color: #F7F8FA;
+    color: #1F2937;
 }
 
 .container {
-  padding: 16rpx 24rpx;
+    padding: 16rpx 24rpx;
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 16rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
-  padding: 24rpx;
+    background: #ffffff;
+    border-radius: 16rpx;
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
+    padding: 24rpx;
 }
 
 .title {
-  font-size: 34rpx;
-  font-weight: 600;
+    font-size: 34rpx;
+    font-weight: 600;
 }
 
 .subtitle {
-  font-size: 26rpx;
-  color: #6B7280;
+    font-size: 26rpx;
+    color: #6B7280;
 }
 
 /* 全局触摸反馈：给任意可点击元素添加 hover-class="tap-active" 即可 */
 .tap-active {
-  transform: scale(0.97);
-  filter: brightness(0.95);
-  transition: transform .12s ease, filter .12s ease;
+    transform: scale(0.97);
+    filter: brightness(0.95);
+    transition: transform .12s ease, filter .12s ease;
 }
-

@@ -128,3 +128,7 @@ interface ExpenseRecord {
 ---
 
 该项目遵循现代化微信小程序开发标准，提供完整的健康管理解决方案。
+
+
+
+figd_MZi_05Mvh6VV1HdSz15QpuC-2PQEhUtfLPABhJfA

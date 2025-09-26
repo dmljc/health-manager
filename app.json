@@ -1,53 +1,52 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/meds/index",
-    "pages/checkups/index",
-    "pages/expense/index",
-    "pages/stats/index"
-  ],
-  "window": {
-    "navigationBarBackgroundColor": "#F7F8FA",
-    "navigationBarTitleText": "健康管理",
-    "navigationStyle": "default",
-    "navigationBarTextStyle": "black",
-    "backgroundTextStyle": "light",
-    "backgroundColor": "#F7F8FA",
-    "enablePullDownRefresh": true
-  },
-  "tabBar": {
-    "color": "#6B7280",
-    "selectedColor": "#2563EB",
-    "backgroundColor": "#FFFFFF",
-    "borderStyle": "white",
-    "list": [
-      { 
-        "pagePath": "pages/index/index", 
-        "text": "首页"
-      },
-      { 
-        "pagePath": "pages/checkups/index", 
-        "text": "体检"
-      },
-      { 
-        "pagePath": "pages/meds/index", 
-        "text": "服药"
-      },
-      { 
-        "pagePath": "pages/expense/index", 
-        "text": "费用"
-      },
-      { 
-        "pagePath": "pages/stats/index", 
-        "text": "统计"
-      }
-    ]
-  },
-  "permission": {
-    "scope.userLocation": {
-      "desc": "你的位置信息将用于小程序位置接口的效果展示"
-    }
-  },
-  "sitemapLocation": "sitemap.json"
+    "pages": [
+        "pages/index/index",
+        "pages/meds/index",
+        "pages/checkups/index",
+        "pages/expense/index",
+        "pages/stats/index"
+    ],
+    "window": {
+        "navigationBarBackgroundColor": "#F7F8FA",
+        "navigationBarTitleText": "健康管理",
+        "navigationStyle": "default",
+        "navigationBarTextStyle": "black",
+        "backgroundTextStyle": "light",
+        "backgroundColor": "#F7F8FA",
+        "enablePullDownRefresh": true
+    },
+    "tabBar": {
+        "color": "#6B7280",
+        "selectedColor": "#2563EB",
+        "backgroundColor": "#FFFFFF",
+        "borderStyle": "white",
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "text": "首页"
+            },
+            {
+                "pagePath": "pages/checkups/index",
+                "text": "体检"
+            },
+            {
+                "pagePath": "pages/meds/index",
+                "text": "服药"
+            },
+            {
+                "pagePath": "pages/expense/index",
+                "text": "费用"
+            },
+            {
+                "pagePath": "pages/stats/index",
+                "text": "统计"
+            }
+        ]
+    },
+    "permission": {
+        "scope.userLocation": {
+            "desc": "你的位置信息将用于小程序位置接口的效果展示"
+        }
+    },
+    "sitemapLocation": "sitemap.json"
 }
-

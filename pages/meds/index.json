@@ -1,4 +1,6 @@
 {
-  "navigationBarTitleText": "服药记录"
+    "navigationBarTitleText": "服药记录",
+    "usingComponents": {
+        "date-picker": "/components/date-picker/index"
+    }
 }
-

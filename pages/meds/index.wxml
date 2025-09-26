@@ -1,27 +1,9 @@
 <!-- 服药模块（精简协调版） -->
 <view class="meds-page">
-  <view class="header">
-    <text class="subtitle">{{todayDate}} · {{todayWeekday}}</text>
-  </view>
-
-  <view class="status">
-    <text class="status-text">{{hasTakenToday ? '已服药' : '未服药'}}
-    </text>
-  </view>
-
-  <view class="circle-wrapper">
-    <view
-      class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}"
-      bindtap="toggleMedicineStatus"
-      hover-class="tap-active"
-      hover-stay-time="80"
-    >
-      <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
+    <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
+    <view class="circle-wrapper">
+        <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="toggleMedicineStatus" hover-class="tap-active" hover-stay-time="80">
+            <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
+        </view>
     </view>
-  </view>
-
-  <view class="hint">
-    <text class="hint-text">轻触圆形切换今日状态</text>
-  </view>
 </view>
-
