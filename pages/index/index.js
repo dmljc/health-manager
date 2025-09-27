@@ -2,8 +2,11 @@
  * 导入工具函数
  */
 const { vibrateForAction } = require('../../utils/vibrate');
-const { getGreeting, formatCurrentDate, getToday, formatDate } = require('../../utils/date');
+const { getGreeting, formatCurrentDate, getToday } = require('../../utils/date');
 const { calculateHealthScore } = require('../../utils/health');
+const { getTodayMedicineStatus, getMedicineAdherence, getCheckupStatus } = require('../../utils/storage');
+const { generateTodayTasks, generateHealthReminders } = require('../../utils/tasks');
+const { generateRecentRecords } = require('../../utils/records');
 
 /**
  * 页面数据
@@ -65,49 +68,9 @@ Page({
     loadHealthOverview() {
         try {
             const today = getToday();
-
-            // 检查今日服药状态
-            const medRecords = wx.getStorageSync('med_records') || [];
-            const todayMedRecord = medRecords.find((record) => record.date === today);
-            const hasMedicineToday = todayMedRecord?.taken || false;
-
-            // 检查体检状态
-            const checkupRecords = wx.getStorageSync('checkup_records') || [];
-            const lastCheckupDate = checkupRecords.length > 0 ?
-                checkupRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date :
-                null;
-
-            let checkupStatus = 'warning';
-            let checkupStatusText = '待检查';
-
-            if (lastCheckupDate) {
-                const daysSinceLastCheckup = Math.floor(
-                    (new Date().getTime() - new Date(lastCheckupDate).getTime()) / (1000 * 60 * 60 * 24)
-                );
-
-                if (daysSinceLastCheckup <= 180) { // 6个月内
-                    checkupStatus = 'success';
-                    checkupStatusText = '正常';
-                } else if (daysSinceLastCheckup <= 210) { // 7个月内
-                    checkupStatus = 'warning';
-                    checkupStatusText = '即将到期';
-                } else {
-                    checkupStatus = 'danger';
-                    checkupStatusText = '已过期';
-                }
-            }
-
-            // 计算服药依从性
-            const last30DaysRecords = medRecords.filter((record) => {
-                const recordDate = new Date(record.date);
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                return recordDate >= thirtyDaysAgo;
-            });
-
-            const medicineAdherence = last30DaysRecords.length > 0 ?
-                Math.round((last30DaysRecords.filter((r) => r.taken).length / last30DaysRecords.length) * 100) :
-                0;
+            const hasMedicineToday = getTodayMedicineStatus(today);
+            const { status: checkupStatus, statusText: checkupStatusText } = getCheckupStatus();
+            const medicineAdherence = getMedicineAdherence();
 
             // 计算健康评分
             const healthScore = calculateHealthScore(
@@ -133,77 +96,7 @@ Page({
      */
     loadTodayTasks() {
         try {
-            const today = getToday();
-            const tasks = [];
-
-            // 检查服药任务
-            const medRecords = wx.getStorageSync('med_records') || [];
-            const todayMedRecord = medRecords.find((record) => record.date === today);
-            const hasMedicineToday = todayMedRecord?.taken || false;
-
-            if (!hasMedicineToday) {
-                const currentMedicine = wx.getStorageSync('current_medicine') || {};
-                const reminderTime = currentMedicine.reminderTime || '09:00';
-
-                tasks.push({
-                    id: 'medicine_today',
-                    title: '服药提醒',
-                    description: `请在${reminderTime}按时服药`,
-                    icon: '💊',
-                    status: 'pending',
-                    statusText: '待完成',
-                    action: 'goMeds'
-                });
-            }
-
-            // 检查体检任务
-            const checkupRecords = wx.getStorageSync('checkup_records') || [];
-            if (checkupRecords.length > 0) {
-                const lastCheckupDate = checkupRecords.sort((a, b) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime()
-                )[0].date;
-
-                const daysSinceLastCheckup = Math.floor(
-                    (new Date().getTime() - new Date(lastCheckupDate).getTime()) / (1000 * 60 * 60 * 24)
-                );
-
-                if (daysSinceLastCheckup >= 180) { // 6个月以上
-                    tasks.push({
-                        id: 'checkup_reminder',
-                        title: '体检提醒',
-                        description: '距离上次体检已超过6个月，建议复查',
-                        icon: '🩺',
-                        status: 'pending',
-                        statusText: '待预约',
-                        action: 'goCheckups'
-                    });
-                }
-            } else {
-                tasks.push({
-                    id: 'first_checkup',
-                    title: '首次体检',
-                    description: '建议进行首次健康体检',
-                    icon: '🩺',
-                    status: 'pending',
-                    statusText: '待完成',
-                    action: 'goCheckups'
-                });
-            }
-
-            // 检查药物余量
-            const currentMedicine = wx.getStorageSync('current_medicine') || {};
-            if (currentMedicine.remainingCount <= 5 && currentMedicine.remainingCount > 0) {
-                tasks.push({
-                    id: 'medicine_low',
-                    title: '药物余量不足',
-                    description: `当前药物剩余${currentMedicine.remainingCount}颗`,
-                    icon: '⚠️',
-                    status: 'pending',
-                    statusText: '需购买',
-                    action: 'goMeds'
-                });
-            }
-
+            const tasks = generateTodayTasks();
             this.setData({ todayTasks: tasks });
         } catch (e) {
             console.error('加载今日任务失败:', e);
@@ -215,65 +108,8 @@ Page({
      */
     loadRecentRecords() {
         try {
-            const records = [];
-
-            // 最近的服药记录
-            const medRecords = wx.getStorageSync('med_records') || [];
-            const recentMedRecords = medRecords
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 3);
-
-            recentMedRecords.forEach((record) => {
-                records.push({
-                    id: `med_${record.id}`,
-                    title: '服药记录',
-                    subtitle: record.taken ? `已服药 ${record.time}` : '未服药',
-                    icon: '💊',
-                    date: formatDate(record.date),
-                    type: 'medicine'
-                });
-            });
-
-            // 最近的体检记录
-            const checkupRecords = wx.getStorageSync('checkup_records') || [];
-            const recentCheckupRecords = checkupRecords
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 2);
-
-            recentCheckupRecords.forEach((record) => {
-                records.push({
-                    id: `checkup_${record.id}`,
-                    title: '体检记录',
-                    subtitle: `费用: ¥${record.totalCost}`,
-                    icon: '🩺',
-                    date: formatDate(record.date),
-                    type: 'checkup'
-                });
-            });
-
-            // 最近的费用记录
-            const expenseRecords = wx.getStorageSync('expense_records') || [];
-            const recentExpenseRecords = expenseRecords
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 2);
-
-            recentExpenseRecords.forEach((record) => {
-                records.push({
-                    id: `expense_${record.id}`,
-                    title: record.typeName,
-                    subtitle: `¥${record.amount}`,
-                    icon: '💰',
-                    date: formatDate(record.date),
-                    type: 'expense'
-                });
-            });
-
-            // 按日期排序并限制数量
-            const sortedRecords = records
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 5);
-
-            this.setData({ recentRecords: sortedRecords });
+            const records = generateRecentRecords();
+            this.setData({ recentRecords: records });
         } catch (e) {
             console.error('加载最近记录失败:', e);
         }
@@ -284,53 +120,8 @@ Page({
      */
     loadHealthReminders() {
         try {
-            const reminders = [];
-
-            // 根据健康状态生成提醒
             const { medicineStatus, checkupStatus, healthScore } = this.data;
-
-            if (medicineStatus === 'danger') {
-                reminders.push({
-                    id: 'medicine_reminder',
-                    title: '服药提醒',
-                    description: '今日还未服药，请及时服用',
-                    icon: '💊',
-                    priority: 'high',
-                    action: 'goMeds'
-                });
-            }
-
-            if (checkupStatus === 'danger') {
-                reminders.push({
-                    id: 'checkup_overdue',
-                    title: '体检逾期',
-                    description: '距离上次体检已超过7个月，请尽快预约体检',
-                    icon: '🩺',
-                    priority: 'high',
-                    action: 'goCheckups'
-                });
-            } else if (checkupStatus === 'warning') {
-                reminders.push({
-                    id: 'checkup_due',
-                    title: '体检提醒',
-                    description: '即将到达体检时间，建议提前预约',
-                    icon: '🩺',
-                    priority: 'medium',
-                    action: 'goCheckups'
-                });
-            }
-
-            if (healthScore < 70) {
-                reminders.push({
-                    id: 'health_low',
-                    title: '健康评分偏低',
-                    description: '请注意按时服药和定期体检，保持健康生活习惯',
-                    icon: '💚',
-                    priority: 'medium',
-                    action: 'goStats'
-                });
-            }
-
+            const reminders = generateHealthReminders(medicineStatus, checkupStatus, healthScore);
             this.setData({ healthReminders: reminders });
         } catch (e) {
             console.error('加载健康提醒失败:', e);

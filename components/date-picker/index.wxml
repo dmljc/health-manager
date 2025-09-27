@@ -14,7 +14,7 @@
         </text>
     </view>
     <view class="dp-grid">
-        <view class="dp-row" wx:for="{{calendar.grid}}" wx:for-item="row" wx:key="*this">
+        <view class="dp-row" wx:for="{{calendar.grid}}" wx:for-item="row" wx:key="index">
             <view class="dp-cell {{cell.inMonth ? '' : 'dp-cell--placeholder'}} {{cell.isToday ? 'dp-cell--today' : ''}} {{cell.isSelected ? 'dp-cell--selected' : ''}}" wx:for="{{row}}" wx:for-item="cell" wx:key="date" data-date="{{cell.date}}" bindtap="onSelectDate">
                 <view wx:if="{{cell.inMonth}}" class="dp-cell-inner">
                     <text class="dp-day">{{cell.day}}</text>
