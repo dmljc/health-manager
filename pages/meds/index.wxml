@@ -2,24 +2,24 @@
 <view class="meds-page">
     <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
     
-    <!-- 药物余量显示 -->
-    <view class="medicine-remaining" bind:tap="onMedicineCountTap">
-        <text class="medicine-icon">💊</text>
-        <text class="medicine-count">
-            <text class="remaining-count {{medicineColorClass}}">{{medicineRemaining}}</text>
-            <text class="number-slash">/</text>
-            <text class="total-count">{{medicineTotal}}</text>
-        </text>
-    </view>
-    
     <view class="circle-wrapper">
         <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="toggleMedicineStatus" hover-class="tap-active" hover-stay-time="80">
             <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
         </view>
+        
+        <!-- 药物余量显示 - 在大红圆右侧 -->
+        <view class="medicine-remaining" bind:tap="onMedicineCountTap">
+            <text class="medicine-icon">💊</text>
+            <text class="medicine-count">
+                <text class="remaining-count {{medicineColorClass}}">{{medicineRemaining}}</text>
+                <text class="number-slash">/</text>
+                <text class="total-count">{{medicineTotal}}</text>
+            </text>
+        </view>
     </view>
     
     <!-- iOS风格弹框 -->
-    <view class="modal-overlay {{showModal ? 'modal-overlay--show' : ''}}" bindtap="closeModal">
+    <view wx:if="{{showModal}}" class="modal-overlay modal-overlay--show" bindtap="closeModal">
         <view class="modal-container" catchtap="preventClose">
             <!-- 标题 -->
             <text class="modal-title">💊设置药物总量</text>

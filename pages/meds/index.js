@@ -40,6 +40,13 @@ Page({
         this.initPageData();
         this.loadMedicineStatus();
         this.loadMedicineData();
+        
+        // 确保弹框状态重置
+        this.setData({
+            showModal: false,
+            modalInputFocus: false,
+            modalTotalInput: ''
+        });
     },
 
     /**
@@ -300,7 +307,8 @@ Page({
     closeModal() {
         this.setData({
             showModal: false,
-            modalInputFocus: false
+            modalInputFocus: false,
+            modalTotalInput: '' // 清空输入框内容
         });
     },
 
@@ -333,7 +341,8 @@ Page({
             medicineTotal: newTotal,
             medicineColorClass: colorClass,
             showModal: false,
-            modalInputFocus: false
+            modalInputFocus: false,
+            modalTotalInput: '' // 清空输入框内容
         });
 
         // 保存到本地存储
