@@ -20,6 +20,14 @@ Page({
         medicineTotal: 28,
         medicineRemaining: 4,
         medicineColorClass: 'normal', // 动态颜色类名
+        
+        // 弹框相关
+        showModal: false,
+        modalTotalInput: '',
+        modalInputFocus: false,
+        
+        // 双击检测
+        lastTapTime: 0,
     },
 
     /**
@@ -251,5 +259,94 @@ Page({
                 duration: 3000
             });
         }
+    },
+
+    /**
+     * 药物数量点击事件（双击检测）
+     */
+    onMedicineCountTap() {
+        const currentTime = Date.now();
+        const timeDiff = currentTime - this.data.lastTapTime;
+        
+        if (timeDiff < 300) { // 300ms内认为是双击
+            vibrateForAction('tap');
+            this.setData({
+                showModal: true,
+                modalTotalInput: this.data.medicineTotal.toString(),
+                modalInputFocus: true
+            });
+            this.setData({
+                lastTapTime: 0 // 重置时间，避免连续触发
+            });
+        } else {
+            this.setData({
+                lastTapTime: currentTime
+            });
+        }
+    },
+
+    /**
+     * 弹框输入事件
+     */
+    onModalTotalInput(e) {
+        this.setData({
+            modalTotalInput: e.detail.value
+        });
+    },
+
+    /**
+     * 关闭弹框
+     */
+    closeModal() {
+        this.setData({
+            showModal: false,
+            modalInputFocus: false
+        });
+    },
+
+    /**
+     * 阻止弹框内容区域点击关闭
+     */
+    preventClose() {
+        // 阻止事件冒泡
+    },
+
+    /**
+     * 确认修改总数量
+     */
+    confirmTotalChange() {
+        const newTotal = parseInt(this.data.modalTotalInput);
+        
+        // 验证输入
+        if (isNaN(newTotal) || newTotal <= 0) {
+            wx.showToast({
+                title: '请输入有效的数量',
+                icon: 'none',
+                duration: 2000
+            });
+            return;
+        }
+
+        // 更新数据
+        const colorClass = this.getMedicineColorClass(this.data.medicineRemaining);
+        this.setData({
+            medicineTotal: newTotal,
+            medicineColorClass: colorClass,
+            showModal: false,
+            modalInputFocus: false
+        });
+
+        // 保存到本地存储
+        const medicineData = {
+            total: newTotal,
+            remaining: this.data.medicineRemaining
+        };
+        wx.setStorageSync('medicine_data', medicineData);
+
+        wx.showToast({
+            title: '药物总量已更新',
+            icon: 'success',
+            duration: 1500
+        });
     },
 });

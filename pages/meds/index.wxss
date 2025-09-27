@@ -7,6 +7,7 @@
     padding: 48rpx 24rpx calc(80rpx + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .circle-wrapper {
@@ -49,24 +50,26 @@
     text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.18);
 }
 
-/* 药物余量显示 - 简洁设计 */
+/* 药物余量显示 - 大红圆右侧 */
 .medicine-remaining {
+    position: absolute;
+    top: 50%;
+    right: 60rpx;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 24rpx 0;
-    padding: 16rpx 0;
+    z-index: 10;
 }
 
 .medicine-icon {
-    font-size: 36rpx;
-    margin-right: 12rpx;
+    font-size: 32rpx;
+    margin-right: 8rpx;
 }
 
 .medicine-count {
-    font-size: 32rpx;
-    font-weight: 400;
-    letter-spacing: -0.5rpx;
+    font-size: 28rpx;
+    font-weight: 500;
+    letter-spacing: -0.2rpx;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     display: flex;
     align-items: baseline;
@@ -83,24 +86,171 @@
 
 .remaining-count.warning {
     color: #f59e0b;
+    font-weight: 700;
 }
 
 .remaining-count.danger {
     color: #ef4444;
+    font-weight: 700;
     animation: pulse 2s infinite;
 }
 
 .number-slash {
-    color: #1f2937;
-    margin: 0 4rpx;
+    color: #666666;
+    margin: 0 2rpx;
+    font-weight: 500;
 }
 
-/* 总数量 - 固定黑色 */
+/* 总数量 - 固定颜色 */
 .total-count {
-    color: #1f2937;
+    color: #666666;
+    font-weight: 500;
 }
 
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
+}
+
+/* iOS极简风格弹框 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-out;
+}
+
+.modal-overlay--show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    background-color: #ffffff;
+    border-radius: 40rpx;
+    width: 500rpx;
+    max-width: 88%;
+    padding: 40rpx 36rpx 32rpx;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.96);
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
+}
+
+.modal-overlay--show .modal-container {
+    transform: scale(1);
+}
+
+
+.modal-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 16rpx;
+    text-align: left;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+.modal-current-info {
+    margin-bottom: 20rpx;
+}
+
+.current-text {
+    font-size: 24rpx;
+    color: #8e8e93;
+    font-weight: 400;
+    text-align: left;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+
+.modal-input-section {
+    margin-bottom: 32rpx;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28rpx;
+    color: #666666;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+.modal-input {
+    width: 300rpx;
+    height: 88rpx;
+    border: 2rpx solid #e5e5e7;
+    border-radius: 40rpx;
+    margin: 0 16rpx;
+    font-size: 32rpx;
+    color: #000000;
+    background-color: transparent;
+    box-sizing: border-box;
+    text-align: center;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    transition: border-color 0.2s ease;
+    vertical-align: middle;
+}
+
+.modal-input:focus {
+    border-color: #007aff;
+    outline: none;
+}
+
+.modal-input::placeholder {
+    color: #c7c7cc;
+    font-weight: 400;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 16rpx;
+}
+
+.modal-btn {
+    flex: 1;
+    height: 80rpx;
+    border-radius: 40rpx;
+    font-size: 30rpx;
+    font-weight: 500;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    transition: all 0.2s ease;
+}
+
+.modal-btn--neutral {
+    background-color: #f2f2f7;
+    color: #8e8e93;
+    border: 1rpx solid #8e8e93;
+}
+
+.modal-btn--neutral:active {
+    background-color: #e5e5ea;
+    transform: scale(0.98);
+}
+
+.modal-btn--primary {
+    background-color: #007aff;
+    color: #ffffff;
+}
+
+.modal-btn--primary:active {
+    background-color: #0056cc;
+    transform: scale(0.98);
 }
