@@ -23,22 +23,32 @@
         "list": [
             {
                 "pagePath": "pages/index/index",
+                "iconPath": "images/icons/home.png",
+                "selectedIconPath": "images/icons/home-active.png",
                 "text": "首页"
             },
             {
                 "pagePath": "pages/checkups/index",
+                "iconPath": "images/icons/checkup.png",
+                "selectedIconPath": "images/icons/checkup-active.png",
                 "text": "体检"
             },
             {
                 "pagePath": "pages/meds/index",
+                "iconPath": "images/icons/meds.png",
+                "selectedIconPath": "images/icons/meds-active.png",
                 "text": "服药"
             },
             {
                 "pagePath": "pages/expense/index",
+                "iconPath": "images/icons/expense.png",
+                "selectedIconPath": "images/icons/expense-active.png",
                 "text": "费用"
             },
             {
                 "pagePath": "pages/stats/index",
+                "iconPath": "images/icons/stats.png",
+                "selectedIconPath": "images/icons/stats-active.png",
                 "text": "统计"
             }
         ]
