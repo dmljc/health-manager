@@ -1,6 +1,17 @@
 <!-- 服药模块（精简协调版） -->
 <view class="meds-page">
     <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
+    
+    <!-- 药物余量显示 -->
+    <view class="medicine-remaining">
+        <text class="medicine-icon">💊</text>
+        <text class="medicine-count">
+            <text class="remaining-count {{medicineColorClass}}">{{medicineRemaining}}</text>
+            <text class="number-slash">/</text>
+            <text class="total-count">{{medicineTotal}}</text>
+        </text>
+    </view>
+    
     <view class="circle-wrapper">
         <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="toggleMedicineStatus" hover-class="tap-active" hover-stay-time="80">
             <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
