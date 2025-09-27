@@ -1,21 +1,8 @@
 /**
- * 导入震动反馈工具
+ * 导入工具函数
  */
 const { vibrateForAction } = require("../../utils/vibrate");
-
-/**
- * 工具函数
- */
-function formatCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-    const weekday = weekdays[now.getDay()];
-
-    return `${year}年${month}月${day}日 ${weekday}`;
-}
+const { formatCurrentDate } = require("../../utils/date");
 
 /**
  * 服药页面

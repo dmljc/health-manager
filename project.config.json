@@ -20,7 +20,7 @@
         "condition": false,
         "swc": false,
         "disableSWC": true,
-        "lazyCodeLoading": false,
+        "lazyCodeLoading": true,
         "ignoreDevUnusedFiles": false,
         "useTypeScript": false,
         "compileHotReLoad": false,

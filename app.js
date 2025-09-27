@@ -23,37 +23,12 @@ App({
      */
     initSystemInfo() {
         try {
-            // 使用新推荐的API代替已弃用的wx.getSystemInfoSync
-            if (wx.getSystemSetting) {
-                const systemSetting = wx.getSystemSetting();
-                console.log("系统设置:", systemSetting);
-            }
-
-            if (wx.getAppBaseInfo) {
-                const appBaseInfo = wx.getAppBaseInfo();
-                console.log("应用基础信息:", appBaseInfo);
-            }
-
+            // 只获取必要的设备信息
             if (wx.getDeviceInfo) {
-                const deviceInfo = wx.getDeviceInfo();
-                this.globalData.systemInfo = deviceInfo;
-                console.log("设备信息:", deviceInfo);
-            }
-
-            if (wx.getWindowInfo) {
-                const windowInfo = wx.getWindowInfo();
-                console.log("窗口信息:", windowInfo);
+                this.globalData.systemInfo = wx.getDeviceInfo();
             }
         } catch (e) {
-            console.warn("获取系统信息失败，使用兼容方案", e);
-            // 兼容旧版本
-            try {
-                const systemInfo = wx.getSystemInfoSync();
-                this.globalData.systemInfo = systemInfo;
-                console.log("系统信息（兼容模式）:", systemInfo);
-            } catch (compatError) {
-                console.error("获取系统信息完全失败", compatError);
-            }
+            console.warn("获取系统信息失败", e);
         }
     },
 
@@ -114,16 +89,10 @@ App({
      * @param {string} theme 主题类型
      */
     applyTheme(theme) {
-        // 这里可以根据主题更新页面样式
-        // 由于微信小程序的限制，主要通过CSS变量实现
-        const pages = getCurrentPages();
-        pages.forEach((page) => {
-            if (page.setData) {
-                page.setData({
-                    currentTheme: theme,
-                });
-            }
-        });
+        // 目前只支持light主题，后续可扩展
+        if (theme === "light") {
+            this.globalData.theme = theme;
+        }
     },
 
     /**
