@@ -16,6 +16,7 @@ Page({
         hasTakenToday: false,
         isToggling: false,
         datePickerRefreshKey: 0,
+        selectedDate: "", // 当前选中的日期
         // 药物管理
         medicineTotal: 28,
         medicineRemaining: 4,
@@ -72,7 +73,8 @@ Page({
      * @returns {void}
      */
     onDateChange(e) {
-        // const { value } = e.detail;
+        const { value } = e.detail;
+        this.loadMedicineStatusForDate(value);
     },
     /**
      * 组件回调：月份变化
@@ -102,37 +104,67 @@ Page({
     },
 
     /**
-     * 切换今日服药状态并持久化，同时刷新日历点
+     * 根据选中日期加载服药状态
+     * @param {string} selectedDate 选中的日期 YYYY-MM-DD
+     * @returns {void}
+     */
+    loadMedicineStatusForDate(selectedDate) {
+        try {
+            const medRecords = wx.getStorageSync("med_records") || [];
+            const selectedRecord = medRecords.find((r) => r.date === selectedDate);
+            
+            // 如果找到该日期的记录，使用记录中的状态
+            // 如果没有记录，默认为未服药状态
+            const hasTakenOnSelectedDate = selectedRecord ? !!selectedRecord.taken : false;
+            
+            this.setData({ 
+                hasTakenToday: hasTakenOnSelectedDate,
+                selectedDate: selectedDate // 保存当前选中的日期
+            });
+        } catch (e) {
+            console.error("加载选中日期服药状态失败:", e);
+        }
+    },
+
+    /**
+     * 切换服药状态并持久化，同时刷新日历点
      * @returns {void}
      */
     toggleMedicineStatus() {
         if (this.data.isToggling) return;
         this.setData({ isToggling: true });
 
-        const { hasTakenToday } = this.data;
+        const { hasTakenToday, selectedDate } = this.data;
         const newStatus = !hasTakenToday;
-        const keyToday = this._getTodayKey();
+        
+        // 使用选中的日期，如果没有选中日期则使用今天
+        const targetDate = selectedDate || this._getTodayKey();
+        const isToday = targetDate === this._getTodayKey();
 
         try {
-            wx.setStorageSync("has_taken_today", newStatus);
+            // 如果是今天，更新今天的状态
+            if (isToday) {
+                wx.setStorageSync("has_taken_today", newStatus);
+            }
 
             const medRecords = wx.getStorageSync("med_records") || [];
-            const idx = medRecords.findIndex((r) => r.date === keyToday);
+            const idx = medRecords.findIndex((r) => r.date === targetDate);
             const time = this._getTimeString();
+            
             if (idx >= 0) {
                 medRecords[idx] = { ...medRecords[idx], taken: newStatus, time };
             } else {
                 medRecords.unshift({
                     id: `med_${Date.now()}`,
-                    date: keyToday,
+                    date: targetDate,
                     taken: newStatus,
                     time,
                 });
             }
             wx.setStorageSync("med_records", medRecords);
 
-            // 如果是从未服药切换到已服药，更新药物消耗
-            if (!hasTakenToday && newStatus) {
+            // 只有今天是未服药切换到已服药时，才更新药物消耗
+            if (isToday && !hasTakenToday && newStatus) {
                 this.updateMedicineConsumption();
             }
 
