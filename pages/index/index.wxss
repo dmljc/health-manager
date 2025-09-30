@@ -1,5 +1,11 @@
 @import "../../styles/theme.wxss";
 
+.home-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: 24rpx;
+}
+
 .page-empty {
   min-height: 100vh;
   background: var(--color-bg);

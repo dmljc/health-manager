@@ -1,0 +1,4 @@
+@import "../../styles/theme.wxss";
+
+.chart-card { background: #fff; border-radius: 16rpx; padding: 16rpx; box-shadow: var(--shadow-md); }
+.chart-canvas { width: 100%; height: 520rpx; display: block; }

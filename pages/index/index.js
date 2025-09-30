@@ -33,7 +33,11 @@ Page({
         // 设置相关
         showSettings: false,
         medicineReminder: true,
-        checkupReminder: true
+        checkupReminder: true,
+
+        // 折线图数据
+        chartCategories: [],
+        chartSeries: []
     },
 
     /**
@@ -47,6 +51,13 @@ Page({
         this.loadTodayTasks();
         this.loadRecentRecords();
         this.loadHealthReminders();
+    },
+
+    onLoad() {
+        // 准备首页折线图数据（示例：健康评分趋势）
+        const categories = ['周一','周二','周三','周四','周五','周六','周日'];
+        const series = [{ name: '健康分', data: [72, 74, 76, 75, 78, 80, 79] }];
+        this.setData({ chartCategories: categories, chartSeries: series });
     },
 
     /**
