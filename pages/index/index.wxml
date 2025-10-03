@@ -1,4 +1,96 @@
 <view class="home-page">
-  <line-chart categories="{{chartCategories}}" series="{{chartSeries}}" item-count="4" />
+  <!-- 问候语区域 -->
+  <view class="greeting-section">
+    <text class="greeting-text">您好，{{userName || '用户'}}</text>
+    <text class="current-date">{{currentDate}}</text>
+  </view>
+
+  <!-- 指标趋势总览：乙肝表面抗原定量 -->
+  <view class="health-score-card">
+    <view class="score-header">
+      <text class="score-title">乙肝表面抗原定量</text>
+    </view>
+    <view class="score-chart">
+      <line-chart 
+        categories="{{hbsagCategories}}" 
+        series="{{hbsagSeries}}"
+        minimal="{{true}}"
+        canvas-id="{{'hbsagCanvas'}}">
+      </line-chart>
+    </view>
+    <view class="indicator-summary">
+      <view class="summary-item" wx:for="{{hbsagIndicators}}" wx:key="name">
+        <text class="summary-name">{{item.name}}</text>
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-trend">{{item.trendText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 指标趋势总览：肝功能（ALT/AST/总胆红素） -->
+  <view class="health-score-card">
+    <view class="score-header">
+      <text class="score-title">肝功能趋势（ALT/AST/总胆红素）</text>
+    </view>
+    <view class="score-chart">
+      <line-chart 
+        categories="{{liverCategories}}" 
+        series="{{liverSeries}}"
+        minimal="{{true}}"
+        canvas-id="{{'liverCanvas'}}">
+      </line-chart>
+    </view>
+    <view class="indicator-summary">
+      <view class="summary-item" wx:for="{{liverIndicators}}" wx:key="name">
+        <text class="summary-name">{{item.name}}</text>
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-trend">{{item.trendText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 指标趋势总览：甲状腺（TT3/FT3/TT4/FT4） -->
+  <view class="health-score-card">
+    <view class="score-header">
+      <text class="score-title">甲状腺激素趋势（TT3/FT3/TT4/FT4）</text>
+    </view>
+    <view class="score-chart">
+      <line-chart 
+        categories="{{thyroidCategories}}" 
+        series="{{thyroidSeries}}"
+        minimal="{{true}}"
+        canvas-id="{{'thyroidCanvas'}}">
+      </line-chart>
+    </view>
+    <view class="indicator-summary">
+      <view class="summary-item" wx:for="{{thyroidIndicators}}" wx:key="name">
+        <text class="summary-name">{{item.name}}</text>
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-trend">{{item.trendText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 指标趋势总览：生化（葡萄糖/总胆固醇/甘油三酯/高密度脂蛋白胆固醇） -->
+  <view class="health-score-card">
+    <view class="score-header">
+      <text class="score-title">生化趋势（葡萄糖/总胆固醇/甘油三酯/高密度脂蛋白胆固醇）</text>
+    </view>
+    <view class="score-chart">
+      <line-chart 
+        categories="{{biochemCategories}}" 
+        series="{{biochemSeries}}"
+        minimal="{{true}}"
+        canvas-id="{{'biochemCanvas'}}">
+      </line-chart>
+    </view>
+    <view class="indicator-summary">
+      <view class="summary-item" wx:for="{{biochemIndicators}}" wx:key="name">
+        <text class="summary-name">{{item.name}}</text>
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-trend">{{item.trendText}}</text>
+      </view>
+    </view>
+  </view>
 </view>
 

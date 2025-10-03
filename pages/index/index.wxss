@@ -2,18 +2,262 @@
 
 .home-page {
   min-height: 100vh;
-  background: var(--color-bg);
-  padding: 24rpx;
+  background: var(--bg-color);
+  padding-bottom: 40rpx;
 }
 
-.page-empty {
-  min-height: 100vh;
-  background: var(--color-bg);
+/* 问候语区域 */
+.greeting-section {
+  padding: 32rpx;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: #fff;
+}
+
+.greeting-text {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.current-date {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 健康评分卡片 */
+.health-score-card {
+  margin: 24rpx 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.score-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.score-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.score-chart {
+  padding: 16rpx;
+}
+
+/* 指标摘要 */
+.indicator-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+  padding: 0 24rpx 24rpx;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.summary-name {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.summary-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summary-trend {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 快捷功能区 */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  margin: 24rpx 32rpx;
+}
+
+.action-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 32rpx 16rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
 }
 
-.empty-text { color: var(--color-text); font-size: 32rpx; font-weight: 600; }
-.empty-sub { color: var(--color-text-secondary); font-size: 24rpx; margin-top: 8rpx; }
+.action-item:active {
+  transform: scale(0.95);
+  box-shadow: var(--shadow-xs);
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* 健康概览 */
+.health-overview {
+  margin: 24rpx 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  box-shadow: var(--shadow-sm);
+}
+
+.overview-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24rpx;
+}
+
+.overview-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.overview-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: var(--bg-secondary);
+  border-radius: 12rpx;
+}
+
+.item-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  width: 48rpx;
+  text-align: center;
+}
+
+.item-content {
+  flex: 1;
+}
+
+.item-title {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-bottom: 4rpx;
+}
+
+.item-status {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 今日任务 */
+.today-tasks {
+  margin: 24rpx 32rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24rpx;
+}
+
+.task-list {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item:active {
+  background: var(--bg-secondary);
+}
+
+.task-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.task-content {
+  flex: 1;
+}
+
+.task-title {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-bottom: 4rpx;
+}
+
+.task-time {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.task-status {
+  font-size: 32rpx;
+  width: 48rpx;
+  text-align: center;
+}
+
+.status-completed {
+  color: var(--success-color);
+}
+
+.status-pending {
+  color: var(--text-secondary);
+}
+
+/* 状态样式 */
+.medicine-normal, .checkup-normal {
+  color: var(--success-color);
+}
+
+.medicine-warning, .checkup-warning {
+  color: var(--warning-color);
+}
+
+.medicine-danger, .checkup-danger {
+  color: var(--danger-color);
+}
