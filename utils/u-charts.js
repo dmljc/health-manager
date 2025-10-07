@@ -394,11 +394,8 @@ class UCharts {
 
       this.ctx.fillStyle = tOpt.fontColor || '#374151';
       this.ctx.textAlign = 'left';
-      // 名称截断以防溢出
-      const valueW = this.measureTextWidth(String(displayValue));
-      const availableNameW = boxWidth - padding * 2 - 16 - 12 - valueW;
-      const nameText = this.truncateText(name, Math.max(availableNameW, 30));
-      this.ctx.fillText(nameText, boxX + padding + 16, rowY);
+      // 始终显示完整名称，不做截断
+      this.ctx.fillText(String(name), boxX + padding + 16, rowY);
 
       this.ctx.textAlign = 'right';
       this.ctx.font = `bold ${fontSize}px sans-serif`;
