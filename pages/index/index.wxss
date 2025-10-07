@@ -28,7 +28,6 @@
 /* 健康评分卡片 */
 .health-score-card {
   margin: 24rpx 32rpx;
-  background: #fff;
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: var(--shadow-md);

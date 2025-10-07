@@ -1,15 +1,29 @@
 <view class="home-page">
-  <view class="health-score-card" wx:for="{{chartBlocks}}" wx:key="title">
+  <view class="health-score-card" wx:for="{{chartBlocks}}" wx:key="title" wx:for-item="item" wx:for-index="index">
     <view class="score-header">
       <text class="score-title">{{item.title}}</text>
     </view>
     <view class="score-chart">
-      <line-chart 
-        categories="{{item.categories}}" 
-        series="{{item.series}}"
-        minimal="{{true}}"
-        canvas-id="{{'chart-' + index}}">
-      </line-chart>
+      <block wx:if="{{item.title === 'HBV-DNA定量'}}">
+        <line-chart 
+          categories="{{item.categories}}" 
+          series="{{item.series}}"
+          minimal="{{true}}"
+          scientific="{{true}}"
+          y-max="{{item.yMax}}"
+          guide-lines="{{item.guideLines}}"
+          canvas-id="{{'chart-' + index}}">
+        </line-chart>
+      </block>
+      <block wx:else>
+        <line-chart 
+          categories="{{item.categories}}" 
+          series="{{item.series}}"
+          minimal="{{true}}"
+          scientific="{{false}}"
+          canvas-id="{{'chart-' + index}}">
+        </line-chart>
+      </block>
     </view>
   </view>
 </view>

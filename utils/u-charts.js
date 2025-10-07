@@ -7,6 +7,9 @@ class UCharts {
   constructor(options) {
     this.$this = options.$this;
     this.canvasId = options.canvasId;
+    // 允许外部传入 Canvas 2D 上下文与画布对象
+    this.ctx = options.ctx || null;
+    this.canvas = options.canvas || null;
     this.type = options.type || 'line';
     this.width = options.width || 300;
     this.height = options.height || 200;
@@ -21,6 +24,7 @@ class UCharts {
     this.yAxis = options.yAxis || {};
     this.extra = options.extra || {};
     this.tooltip = options.tooltip || { show: true };
+    this.valueFormatter = options.valueFormatter || null;
     // 记录上一次触发震动的索引，避免过度触发
     this._lastTooltipIndex = null;
     
@@ -41,15 +45,16 @@ class UCharts {
   }
   
   initWechat() {
+    // 如果外部已提供 Canvas 2D 上下文，则直接使用
+    if (this.ctx) {
+      this.canvas = this.canvas || { width: this.width, height: this.height };
+      this.draw();
+      return;
+    }
     // 使用传统的 Canvas API，兼容性更好
     this.ctx = wx.createCanvasContext(this.canvasId, this.$this);
-    
     // 设置画布尺寸
-    this.canvas = {
-      width: this.width,
-      height: this.height
-    };
-    
+    this.canvas = { width: this.width, height: this.height };
     this.draw();
   }
   
@@ -58,7 +63,7 @@ class UCharts {
   draw() {
     if (!this.ctx || !this.categories.length || !this.series.length) return;
     
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    try { this.ctx.clearRect(0, 0, this.width, this.height); } catch (_) {}
     
     // 计算绘图区域
     this.chartArea = {
@@ -74,6 +79,8 @@ class UCharts {
     // 绘制网格和坐标轴
     this.drawGrid();
     this.drawAxes();
+    // 绘制参考横线（如 3.0E+1）
+    this.drawGuideLines();
     
     // 绘制数据
     this.drawData();
@@ -88,8 +95,10 @@ class UCharts {
       this.drawLegend();
     }
     
-    // 微信小程序需要调用 draw() 方法来实际绘制
-    this.ctx.draw();
+    // 旧版 CanvasContext 需要调用 draw() 方法来实际绘制；Canvas 2D 不需要
+    try {
+      if (typeof this.ctx.draw === 'function') this.ctx.draw();
+    } catch (_) {}
   }
   
   calculateDataRange() {
@@ -99,10 +108,17 @@ class UCharts {
     this.minY = Math.min(...allData);
     this.maxY = Math.max(...allData);
     
-    // 添加一些边距
-    const range = this.maxY - this.minY;
-    this.minY = Math.max(0, this.minY - range * 0.1);
-    this.maxY = this.maxY + range * 0.1;
+    // 如果外部传入 yAxis.min/max 则优先使用；否则添加一些边距
+    const configuredMin = this.yAxis && typeof this.yAxis.min === 'number' ? this.yAxis.min : null;
+    const configuredMax = this.yAxis && typeof this.yAxis.max === 'number' ? this.yAxis.max : null;
+    if (configuredMin != null || configuredMax != null) {
+      if (configuredMin != null) this.minY = configuredMin;
+      if (configuredMax != null) this.maxY = configuredMax;
+    } else {
+      const range = this.maxY - this.minY;
+      this.minY = Math.max(0, this.minY - range * 0.1);
+      this.maxY = this.maxY + range * 0.1;
+    }
     
     // 计算 X 轴显示范围
     const itemCount = this.xAxis.itemCount || this.categories.length;
@@ -126,11 +142,13 @@ class UCharts {
     for (let i = 0; i <= splitNumber; i++) {
       const y = this.chartArea.y + (this.chartArea.height / splitNumber) * i;
       
-      if (this.yAxis.gridType === 'dash') {
-        this.ctx.setLineDash([5, 5]);
-      } else {
-        this.ctx.setLineDash([]);
-      }
+      try {
+        if (this.yAxis.gridType === 'dash') {
+          this.ctx.setLineDash([5, 5]);
+        } else {
+          this.ctx.setLineDash([]);
+        }
+      } catch (_) {}
       
       this.ctx.beginPath();
       this.ctx.moveTo(this.chartArea.x, y);
@@ -178,7 +196,8 @@ class UCharts {
     for (let i = 0; i <= splitNumber; i++) {
       const y = this.chartArea.y + this.chartArea.height - (this.chartArea.height / splitNumber) * i;
       const value = this.minY + (this.maxY - this.minY) * (i / splitNumber);
-      this.ctx.fillText(Math.round(value), this.chartArea.x - 10, y);
+      const label = this.formatValue(value);
+      this.ctx.fillText(label, this.chartArea.x - 10, y);
     }
   }
   
@@ -307,10 +326,17 @@ class UCharts {
 
     let maxRowWidth = 0;
     for (let r = 0; r < rows; r++) {
-      const name = this.series[r].name || '';
-      const value = this.series[r].data[this.tooltipIndex];
+      const serie = this.series[r] || {};
+      const name = serie.name || '';
+      const value = serie.data ? serie.data[this.tooltipIndex] : null;
+      let displayValue = null;
+      if (Array.isArray(serie.displayData)) {
+        const dv = serie.displayData[this.tooltipIndex];
+        if (dv != null) displayValue = String(dv);
+      }
+      if (displayValue == null) displayValue = this.formatValue(value);
       const nameW = this.measureTextWidth(name);
-      const valueW = this.measureTextWidth(String(value));
+      const valueW = this.measureTextWidth(String(displayValue));
       // 左侧有色点和间距约 16px，文本间距约 12px
       const rowW = 16 + nameW + 12 + valueW;
       if (rowW > maxRowWidth) maxRowWidth = rowW;
@@ -350,8 +376,15 @@ class UCharts {
 
     for (let r = 0; r < rows; r++) {
       const color = this.colors[r % this.colors.length];
-      const name = this.series[r].name || '';
-      const value = this.series[r].data[this.tooltipIndex];
+      const serie = this.series[r] || {};
+      const name = serie.name || '';
+      const value = serie.data ? serie.data[this.tooltipIndex] : null;
+      let displayValue = null;
+      if (Array.isArray(serie.displayData)) {
+        const dv = serie.displayData[this.tooltipIndex];
+        if (dv != null) displayValue = String(dv);
+      }
+      if (displayValue == null) displayValue = this.formatValue(value);
       const rowY = boxY + padding + headerHeight + r * lineHeight + lineHeight / 2;
 
       this.ctx.beginPath();
@@ -362,14 +395,14 @@ class UCharts {
       this.ctx.fillStyle = tOpt.fontColor || '#374151';
       this.ctx.textAlign = 'left';
       // 名称截断以防溢出
-      const valueW = this.measureTextWidth(String(value));
+      const valueW = this.measureTextWidth(String(displayValue));
       const availableNameW = boxWidth - padding * 2 - 16 - 12 - valueW;
       const nameText = this.truncateText(name, Math.max(availableNameW, 30));
       this.ctx.fillText(nameText, boxX + padding + 16, rowY);
 
       this.ctx.textAlign = 'right';
       this.ctx.font = `bold ${fontSize}px sans-serif`;
-      this.ctx.fillText(String(value), boxX + boxWidth - padding, rowY);
+      this.ctx.fillText(String(displayValue), boxX + boxWidth - padding, rowY);
     }
     this.ctx.restore();
   }
@@ -482,8 +515,45 @@ class UCharts {
   updateData(data) {
     if (data.categories) this.categories = data.categories;
     if (data.series) this.series = data.series;
+    if (data.xAxis) this.xAxis = data.xAxis;
+    if (data.yAxis) this.yAxis = data.yAxis;
+    if (data.valueFormatter) this.valueFormatter = data.valueFormatter;
+    if (typeof data.enableScroll !== 'undefined') this.enableScroll = data.enableScroll;
     this.calculateDataRange();
     this.draw();
+  }
+
+  // 值格式化统一入口
+  formatValue(v) {
+    try {
+      if (typeof this.valueFormatter === 'function') {
+        const rv = this.valueFormatter(v);
+        return rv == null ? '' : String(rv);
+      }
+    } catch (_) {}
+    return String(Math.round(v));
+  }
+
+  // 绘制参考横线（从 extra.guideLines 读取）
+  drawGuideLines() {
+    const lines = (this.extra && Array.isArray(this.extra.guideLines)) ? this.extra.guideLines : [];
+    if (!lines.length) return;
+    for (let i = 0; i < lines.length; i++) {
+      const gl = lines[i] || {};
+      const yVal = typeof gl.y === 'number' ? gl.y : null;
+      if (yVal == null || !isFinite(yVal)) continue;
+      const y = this.chartArea.y + this.chartArea.height - ((yVal - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+      try {
+        if (gl.dash && Array.isArray(gl.dash)) this.ctx.setLineDash(gl.dash); else this.ctx.setLineDash([]);
+      } catch (_) {}
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = gl.color || '#DC2626';
+      this.ctx.lineWidth = gl.width != null ? gl.width : 1;
+      this.ctx.moveTo(this.chartArea.x, y);
+      this.ctx.lineTo(this.chartArea.x + this.chartArea.width, y);
+      this.ctx.stroke();
+      this.ctx.setLineDash([]);
+    }
   }
 }
 

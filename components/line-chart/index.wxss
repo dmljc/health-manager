@@ -1,4 +1,3 @@
-@import "../../styles/theme.wxss";
-
-.chart-card { background: #fff; border-radius: 16rpx; padding: 16rpx; box-shadow: var(--shadow-md); }
+/* 组件内不引入全局选择器，避免 :root 等不被允许的选择器 */
+.chart-card { background: #fff; border-radius: 16rpx; padding: 16rpx; box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08); }
 .chart-canvas { width: 100%; height: 520rpx; display: block; }

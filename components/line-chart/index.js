@@ -9,12 +9,20 @@ Component({
     // 默认不滚动，直接展示全量
     enableScroll: { type: Boolean, value: false },
     canvasId: { type: String, value: 'lineChartCanvas' },
-    minimal: { type: Boolean, value: false }
+    minimal: { type: Boolean, value: false },
+    // 仅当为 HBV-DNA 定量时启用科学记数法与 y 轴固定范围
+    scientific: { type: Boolean, value: false },
+    // 可选：外部传入 y 轴最大值（仅科学模式下使用）
+    yMax: { type: Number, value: null },
+    // 可选：参考横线配置，传递给图表库 extra.guideLines
+    guideLines: { type: Array, value: [] }
   },
   data: {
     cWidth: 0,
     cHeight: 0,
-    pixelRatio: 1
+    pixelRatio: 1,
+    _canvasNode: null,
+    _ctx2d: null
   },
   lifetimes: {
     attached() {
@@ -27,19 +35,73 @@ Component({
       const cWidth = Math.floor(windowWidth - pagePadding * 2 - cardPadding * 2);
       const cHeight = Math.floor(520 * windowWidth / 750);
       this.setData({ pixelRatio, cWidth, cHeight }, () => {
-        this.renderChart();
+        // 获取 Canvas 2D 节点与上下文
+        wx.createSelectorQuery()
+          .in(this)
+          .select(`#${this.data.canvasId}`)
+          .node()
+          .exec((res) => {
+            try {
+              const node = res && res[0] && res[0].node;
+              if (node) {
+                const ctx = node.getContext('2d');
+                // 设置像素比与尺寸，避免模糊
+                node.width = cWidth * pixelRatio;
+                node.height = cHeight * pixelRatio;
+                ctx.scale(pixelRatio, pixelRatio);
+                this.setData({ _canvasNode: node, _ctx2d: ctx }, () => this.renderChart());
+              } else {
+                // 回退：仍然渲染（图表库会使用旧接口）
+                this.renderChart();
+              }
+            } catch (_) {
+              this.renderChart();
+            }
+          });
       });
     }
   },
   methods: {
     renderChart() {
-      const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal } = this.data;
+      const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal, scientific, yMax, guideLines, _ctx2d, _canvasNode } = this.data;
       if (!categories || !series || !cWidth || !cHeight) return;
       // 自动设置 itemCount 为分类总数，实现全量显示
       const finalItemCount = (itemCount == null || itemCount <= 0) ? categories.length : itemCount;
+      const useScientific = !!scientific;
+      let finalYMax = yMax;
+      if (useScientific) {
+        // 计算 y 轴最大值为数据最大值的两倍，保持居中显示
+        let maxVal = 0;
+        try {
+          series.forEach(s => {
+            (s.data || []).forEach(v => {
+              if (typeof v === 'number' && Number.isFinite(v)) {
+                if (v > maxVal) maxVal = v;
+              }
+            });
+          });
+        } catch (_) {}
+        if (finalYMax == null) {
+          finalYMax = maxVal > 0 ? maxVal * 2 : undefined;
+        }
+      }
+      const valueFormatter = useScientific ? ((v) => {
+        if (v == null || !isFinite(v)) return '';
+        if (v === 0) return '0E0';
+        const exp = Math.floor(Math.log10(Math.abs(v)));
+        const mantissa = v / Math.pow(10, exp);
+        const mStr = mantissa.toFixed(1);
+        const sign = exp >= 0 ? '+' : '';
+        return `${mStr}E${sign}${exp}`;
+      }) : null;
+      const yAxis = useScientific
+        ? { gridType: minimal ? 'none' : 'dash', splitNumber: 4, min: 0, max: finalYMax }
+        : { gridType: minimal ? 'none' : 'dash', splitNumber: 4 };
       this._chart = new UCharts({
         $this: this,
         canvasId: canvasId,
+        ctx: _ctx2d || null,
+        canvas: _canvasNode ? { width: cWidth, height: cHeight } : null,
         type: 'line',
         categories,
         series,
@@ -51,8 +113,9 @@ Component({
         dataPointShape: !minimal,
         enableScroll,
         xAxis: { disableGrid: true, itemCount: finalItemCount, scrollShow: enableScroll },
-        yAxis: { gridType: minimal ? 'none' : 'dash', splitNumber: 4 },
-        extra: { line: { type: 'curve' } },
+        yAxis,
+        valueFormatter,
+        extra: { line: { type: 'curve' }, guideLines },
         tooltip: {
           show: true,
           bgColor: '#fff',
@@ -83,15 +146,45 @@ Component({
     }
   },
   observers: {
-    'categories, series'(cats, ser) {
+    'categories, series, scientific, yMax, guideLines'(cats, ser, scientific, yMax, guideLines) {
       if (!cats || !ser) return;
       if (this._chart && this._chart.updateData) {
         const newItemCount = cats.length || 0;
+        const useScientific = !!scientific;
+        let finalYMax = yMax;
+        if (useScientific) {
+          let maxVal = 0;
+          try {
+            ser.forEach(s => {
+              (s.data || []).forEach(v => {
+                if (typeof v === 'number' && Number.isFinite(v)) {
+                  if (v > maxVal) maxVal = v;
+                }
+              });
+            });
+          } catch (_) {}
+          if (finalYMax == null) {
+            finalYMax = maxVal > 0 ? maxVal * 2 : undefined;
+          }
+        }
+        const valueFormatter = useScientific ? ((v) => {
+          if (v == null || !isFinite(v)) return '';
+          if (v === 0) return '0E0';
+          const exp = Math.floor(Math.log10(Math.abs(v)));
+          const mantissa = v / Math.pow(10, exp);
+          const mStr = mantissa.toFixed(1);
+          const sign = exp >= 0 ? '+' : '';
+          return `${mStr}E${sign}${exp}`;
+        }) : null;
+        const yAxis = useScientific ? { min: 0, max: finalYMax } : {};
         this._chart.updateData({ 
           categories: cats, 
           series: ser,
           xAxis: { itemCount: newItemCount, scrollShow: false },
-          enableScroll: false
+          yAxis,
+          valueFormatter,
+          enableScroll: false,
+          extra: { guideLines }
         });
       } else {
         this.renderChart();
