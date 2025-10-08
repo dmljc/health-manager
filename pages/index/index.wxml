@@ -10,13 +10,7 @@
           series="{{item.series}}"
           minimal="{{true}}"
           scientific="{{true}}"
-          y-max="{{item.yMax}}"
-          guide-lines="{{item.guideLines}}"
           canvas-id="{{'chart-' + index}}"
-          safe-region="{{item.safeRegion}}"
-          background-regions="{{item.backgroundRegions}}"
-          y-axis-ticks="{{item.yAxisTicks}}"
-          y-axis-max="{{item.yAxisMax}}"
         >
         </line-chart>
       </block>
@@ -40,20 +34,33 @@
           </line-chart>
         </block>
         <block wx:else>
-          <line-chart 
-            categories="{{item.categories}}" 
-            series="{{item.series}}"
-            minimal="{{true}}"
-            scientific="{{false}}"
-            canvas-id="{{'chart-' + index}}"
-            show-background="{{item.showBackground}}"
-            safe-region="{{item.safeRegion}}"
-            background-regions="{{item.backgroundRegions}}"
-            guide-lines="{{item.guideLines}}"
-            y-axis-ticks="{{item.yAxisTicks}}"
-            y-axis-min="{{item.yAxisMin}}"
-          >
-          </line-chart>
+          <!-- 仅在“尿酸”需要时传递背景/参考线等配置；其他指标不传这些可选属性 -->
+          <block wx:if="{{item.title === '尿酸'}}">
+            <line-chart 
+              categories="{{item.categories}}" 
+              series="{{item.series}}"
+              minimal="{{true}}"
+              scientific="{{false}}"
+              canvas-id="{{'chart-' + index}}"
+              show-background="{{item.showBackground}}"
+              safe-region="{{item.safeRegion}}"
+              background-regions="{{item.backgroundRegions}}"
+              guide-lines="{{item.guideLines}}"
+              y-axis-ticks="{{item.yAxisTicks}}"
+              y-axis-min="{{item.yAxisMin}}"
+            >
+            </line-chart>
+          </block>
+          <block wx:else>
+            <line-chart 
+              categories="{{item.categories}}" 
+              series="{{item.series}}"
+              minimal="{{true}}"
+              scientific="{{false}}"
+              canvas-id="{{'chart-' + index}}"
+            >
+            </line-chart>
+          </block>
         </block>
       </block>
     </view>

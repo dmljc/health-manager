@@ -1,4 +1,5 @@
 const USER_DATA = require('../../utils/user-health-data');
+const { vibrateLight } = require('../../utils/vibrate');
 
 Page({
   data: {
@@ -11,7 +12,18 @@ Page({
   },
 
   onShow() {
+    // 若已构建过图表且数据未清空，则不重复重建，避免性能告警
+    if (Array.isArray(this.data.chartBlocks) && this.data.chartBlocks.length > 0) {
+      return;
+    }
     this.buildChartsFromUserData();
+  },
+
+  // 底部 Tab 点击切换到首页时触发轻震动反馈
+  onTabItemTap(item) {
+    try {
+      vibrateLight({ type: 'light', silent: true });
+    } catch (_) {}
   },
 
   // 日期标签格式化：YYYY-MM
@@ -103,7 +115,7 @@ Page({
               showBackground: false,
               yAxisMin: 0,
               yAxisTicks: [0, 208, 428],
-              safeRegion: { min: 208, max: 428, color: '#D1FAE5' },
+              safeRegion: {},
               backgroundRegions: [
                 { min: 0, max: 208, color: '#FEF3C7' },
                 { min: 428, max: 600, color: '#FEF3C7' }
@@ -124,7 +136,7 @@ Page({
               yAxisMin: 0,
               yAxisMax: 2.75,
               yAxisTicks: [0, 1.7],
-              safeRegion: { max: 1.7, color: '#D1FAE5' },
+              safeRegion: {},
               backgroundRegions: [
                 { min: 1.7, max: 2.75, color: '#FEF3C7' }
               ],
@@ -133,7 +145,17 @@ Page({
               ]
             });
           } else {
-            chartBlocks.push({ title: name, categories, series });
+            chartBlocks.push({ title: name, categories, series,
+              minimal: true,
+              scientific: false,
+              showBackground: false,
+              yAxisMin: 0,
+              yAxisTicks: [],
+              safeRegion: {},
+              backgroundRegions: [],
+              guideLines: [],
+              yAxisMax: undefined
+            });
           }
         }
       });

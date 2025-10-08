@@ -35,7 +35,7 @@ Component({
   lifetimes: {
     attached() {
       // 微信小程序环境初始化
-      const sys = wx.getSystemInfoSync();
+      const sys = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
       const pixelRatio = Math.max(1, Math.min(sys.pixelRatio || 1, 3));
       const windowWidth = sys.windowWidth;
       const pagePadding = 24 * windowWidth / 750;
