@@ -5,8 +5,7 @@
         "pages/meds/index",
         "pages/checkups/index",
         "pages/expense/index",
-        "pages/stats/index",
-        "pages/health-charts/index"
+        "pages/stats/index"
     ],
     "window": {
         "navigationBarBackgroundColor": "#F7F8FA",
