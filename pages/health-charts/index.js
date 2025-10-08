@@ -153,7 +153,8 @@ Page({
         });
       } else if (seriesNames.includes('甘油三酯')) {
         this.setData({
-          yAxisTicks: null, // 使用自动刻度
+          yAxisTicks: [0, 1.7],
+          yAxisMin: 0,
           yAxisMax: 2.75,
           safeRegion: { max: 1.7, color: '#D1FAE5' }, // 绿色安全区
           backgroundRegions: [

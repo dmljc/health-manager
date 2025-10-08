@@ -118,8 +118,9 @@ Page({
               minimal: true,
               scientific: false,
               showBackground: false,
+              yAxisMin: 0,
               yAxisMax: 2.75,
-              yAxisTicks: null,
+              yAxisTicks: [0, 1.7],
               safeRegion: { max: 1.7, color: '#D1FAE5' },
               backgroundRegions: [
                 { min: 1.7, max: 2.75, color: '#FEF3C7' }

@@ -70,6 +70,19 @@ Component({
     }
   },
   methods: {
+    computeEffectiveTicks(yAxisTicks, series, safeRegion) {
+      if (Array.isArray(yAxisTicks) && yAxisTicks.length > 0) return yAxisTicks;
+      try {
+        const hasTriglycerides = (series || []).some(s => {
+          const name = String(s && s.name || '').toLowerCase();
+          return name.includes('甘油三酯') || name.includes('triglyceride');
+        });
+        if (hasTriglycerides) {
+          return [0, 1.7];
+        }
+      } catch (_) {}
+      return null;
+    },
     renderChart() {
       const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal, scientific, yMax, guideLines, safeRegion, backgroundRegions, yAxisTicks, yAxisMin, yAxisMax, showBackground, _ctx2d, _canvasNode } = this.data;
       if (!categories || !series || !cWidth || !cHeight) return;
@@ -102,12 +115,17 @@ Component({
         const sign = exp >= 0 ? '+' : '';
         return `${mStr}E${sign}${exp}`;
       }) : null;
-      // 在提供自定义刻度时强制使用虚线网格
-      const wantDashedGrid = Array.isArray(yAxisTicks) && yAxisTicks.length > 0;
-      const gridType = wantDashedGrid ? 'dash' : (minimal ? 'none' : 'dash');
+      // 推断有效刻度：若未提供且为甘油三酯，则使用 [0, 1.7]
+      const effectiveTicks = this.computeEffectiveTicks(yAxisTicks, series, safeRegion);
+      const hasTicks = Array.isArray(effectiveTicks) && effectiveTicks.length > 0;
+      const gridType = hasTicks ? 'dash' : (minimal ? 'none' : 'dash');
       const yAxis = scientific
-        ? { gridType, splitNumber: 4, min: 0, max: finalYMax, ticks: yAxisTicks || null }
-        : { gridType, splitNumber: 4, ticks: yAxisTicks || null, min: (yAxisMin != null ? yAxisMin : undefined), max: (yAxisMax != null ? yAxisMax : undefined) };
+        ? (hasTicks
+            ? { gridType, min: 0, max: finalYMax, ticks: effectiveTicks }
+            : { gridType, splitNumber: 4, min: 0, max: finalYMax, ticks: null })
+        : (hasTicks
+            ? { gridType, ticks: effectiveTicks, min: (yAxisMin != null ? yAxisMin : undefined), max: (yAxisMax != null ? yAxisMax : undefined) }
+            : { gridType, splitNumber: 4, ticks: null, min: (yAxisMin != null ? yAxisMin : undefined), max: (yAxisMax != null ? yAxisMax : undefined) });
       this._chart = new UCharts({
         $this: this,
         canvasId: canvasId,
@@ -192,11 +210,12 @@ Component({
           const sign = exp >= 0 ? '+' : '';
           return `${mStr}E${sign}${exp}`;
         }) : null;
-        const wantDashedGrid = Array.isArray(yAxisTicks) && yAxisTicks.length > 0;
+        const effectiveTicks = this.computeEffectiveTicks(yAxisTicks, ser, safeRegion);
+        const wantDashedGrid = Array.isArray(effectiveTicks) && effectiveTicks.length > 0;
         const gridType = wantDashedGrid ? 'dash' : 'dash';
         const yAxis = useScientific 
-          ? { gridType, min: 0, max: finalYMax, ticks: yAxisTicks || null }
-          : { gridType, ticks: yAxisTicks || null, min: yAxisMin != null ? yAxisMin : undefined, max: yAxisMax != null ? yAxisMax : undefined };
+          ? { gridType, min: 0, max: finalYMax, ticks: effectiveTicks || null }
+          : { gridType, ticks: effectiveTicks || null, min: yAxisMin != null ? yAxisMin : undefined, max: yAxisMax != null ? yAxisMax : undefined };
         this._chart.updateData({ 
           categories: cats, 
           series: ser,
