@@ -12,17 +12,49 @@
           scientific="{{true}}"
           y-max="{{item.yMax}}"
           guide-lines="{{item.guideLines}}"
-          canvas-id="{{'chart-' + index}}">
+          canvas-id="{{'chart-' + index}}"
+          safe-region="{{item.safeRegion}}"
+          background-regions="{{item.backgroundRegions}}"
+          y-axis-ticks="{{item.yAxisTicks}}"
+          y-axis-max="{{item.yAxisMax}}"
+        >
         </line-chart>
       </block>
       <block wx:else>
-        <line-chart 
-          categories="{{item.categories}}" 
-          series="{{item.series}}"
-          minimal="{{true}}"
-          scientific="{{false}}"
-          canvas-id="{{'chart-' + index}}">
-        </line-chart>
+        <!-- 若为甘油三酯且需要限制最大值，则传入 y-axis-max；否则不传，避免被解析为 0 -->
+        <block wx:if="{{item.yAxisMax !== null && item.yAxisMax !== undefined}}">
+          <line-chart 
+            categories="{{item.categories}}" 
+            series="{{item.series}}"
+            minimal="{{true}}"
+            scientific="{{false}}"
+            canvas-id="{{'chart-' + index}}"
+            show-background="{{item.showBackground}}"
+            safe-region="{{item.safeRegion}}"
+            background-regions="{{item.backgroundRegions}}"
+            guide-lines="{{item.guideLines}}"
+            y-axis-ticks="{{item.yAxisTicks}}"
+            y-axis-max="{{item.yAxisMax}}"
+            y-axis-min="{{item.yAxisMin}}"
+          >
+          </line-chart>
+        </block>
+        <block wx:else>
+          <line-chart 
+            categories="{{item.categories}}" 
+            series="{{item.series}}"
+            minimal="{{true}}"
+            scientific="{{false}}"
+            canvas-id="{{'chart-' + index}}"
+            show-background="{{item.showBackground}}"
+            safe-region="{{item.safeRegion}}"
+            background-regions="{{item.backgroundRegions}}"
+            guide-lines="{{item.guideLines}}"
+            y-axis-ticks="{{item.yAxisTicks}}"
+            y-axis-min="{{item.yAxisMin}}"
+          >
+          </line-chart>
+        </block>
       </block>
     </view>
   </view>

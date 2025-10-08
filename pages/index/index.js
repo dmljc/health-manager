@@ -89,7 +89,48 @@ Page({
             ]
           });
         } else {
-          chartBlocks.push({ title: name, categories, series });
+          // 为尿酸与甘油三酯注入通用组件可识别的配置
+          if (name === '尿酸') {
+            chartBlocks.push({ 
+              title: name, 
+              categories, 
+              series,
+              minimal: true,
+              scientific: false,
+              showBackground: false,
+              yAxisMin: 0,
+              yAxisTicks: [208, 428],
+              safeRegion: { min: 208, max: 428, color: '#D1FAE5' },
+              backgroundRegions: [
+                { min: 0, max: 208, color: '#FEF3C7' },
+                { min: 428, max: 600, color: '#FEF3C7' }
+              ],
+              guideLines: [
+                { y: 208, color: '#DC2626', width: 1, dash: [4,4] },
+                { y: 428, color: '#DC2626', width: 1, dash: [4,4] }
+              ]
+            });
+          } else if (name === '甘油三酯') {
+            chartBlocks.push({ 
+              title: name, 
+              categories, 
+              series,
+              minimal: true,
+              scientific: false,
+              showBackground: false,
+              yAxisMax: 2.75,
+              yAxisTicks: null,
+              safeRegion: { max: 1.7, color: '#D1FAE5' },
+              backgroundRegions: [
+                { min: 1.7, max: 2.75, color: '#FEF3C7' }
+              ],
+              guideLines: [
+                { y: 1.7, color: '#F59E0B', dash: [5,5] }
+              ]
+            });
+          } else {
+            chartBlocks.push({ title: name, categories, series });
+          }
         }
       });
 

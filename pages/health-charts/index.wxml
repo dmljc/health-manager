@@ -58,6 +58,12 @@
         categories="{{chartCategories}}" 
         series="{{chartSeries}}" 
         minimal="{{true}}"
+        y-axis-ticks="{{yAxisTicks}}"
+         y-axis-max="{{yAxisMax}}"
+        show-background="{{false}}"
+        safe-region="{{safeRegion}}"
+        guide-lines="{{guideLines}}"
+        background-regions="{{backgroundRegions}}"
       />
     </view>
   </view>

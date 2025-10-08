@@ -79,6 +79,8 @@ class UCharts {
     // 绘制网格和坐标轴
     this.drawGrid();
     this.drawAxes();
+    // 绘制安全区背景
+    this.drawSafeRegion();
     // 绘制参考横线（如 3.0E+1）
     this.drawGuideLines();
     
@@ -111,12 +113,16 @@ class UCharts {
     // 如果外部传入 yAxis.min/max 则优先使用；否则添加一些边距
     const configuredMin = this.yAxis && typeof this.yAxis.min === 'number' ? this.yAxis.min : null;
     const configuredMax = this.yAxis && typeof this.yAxis.max === 'number' ? this.yAxis.max : null;
-    if (configuredMin != null || configuredMax != null) {
-      if (configuredMin != null) this.minY = configuredMin;
-      if (configuredMax != null) this.maxY = configuredMax;
+    if (configuredMin != null) {
+      this.minY = configuredMin;
     } else {
       const range = this.maxY - this.minY;
       this.minY = Math.max(0, this.minY - range * 0.1);
+    }
+    if (configuredMax != null) {
+      this.maxY = configuredMax;
+    } else {
+      const range = this.maxY - this.minY;
       this.maxY = this.maxY + range * 0.1;
     }
     
@@ -134,26 +140,50 @@ class UCharts {
   }
   
   drawGrid() {
+    // 绘制自定义区域背景色
+    if (this.extra && Array.isArray(this.extra.backgroundRegions)) {
+      this.extra.backgroundRegions.forEach(region => {
+        if (typeof region.min !== 'number' || typeof region.max !== 'number') return;
+        const startY = this.chartArea.y + this.chartArea.height - ((region.max - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+        const endY = this.chartArea.y + this.chartArea.height - ((region.min - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+        this.ctx.save();
+        this.ctx.fillStyle = region.color || 'rgba(0,0,0,0.1)';
+        this.ctx.fillRect(this.chartArea.x, startY, this.chartArea.width, endY - startY);
+        this.ctx.restore();
+      });
+    }
+
     this.ctx.strokeStyle = '#E5E7EB';
     this.ctx.lineWidth = 1;
-    
-    // Y 轴网格线
-    const splitNumber = this.yAxis.splitNumber || 4;
-    for (let i = 0; i <= splitNumber; i++) {
-      const y = this.chartArea.y + (this.chartArea.height / splitNumber) * i;
-      
-      try {
-        if (this.yAxis.gridType === 'dash') {
-          this.ctx.setLineDash([5, 5]);
-        } else {
-          this.ctx.setLineDash([]);
-        }
-      } catch (_) {}
-      
+
+    const drawLine = (y) => {
       this.ctx.beginPath();
       this.ctx.moveTo(this.chartArea.x, y);
       this.ctx.lineTo(this.chartArea.x + this.chartArea.width, y);
       this.ctx.stroke();
+    };
+
+    try {
+      if (this.yAxis.gridType === 'dash') {
+        this.ctx.setLineDash([5, 5]);
+      } else {
+        this.ctx.setLineDash([]);
+      }
+    } catch (_) {}
+
+    // 如果提供了自定义刻度，则按自定义刻度绘制网格线
+    if (this.yAxis.ticks && this.yAxis.ticks.length > 0) {
+      this.yAxis.ticks.forEach(tickValue => {
+        const y = this.chartArea.y + this.chartArea.height - ((tickValue - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+        drawLine(y);
+      });
+    } else {
+      // Y 轴网格线
+      const splitNumber = this.yAxis.splitNumber || 4;
+      for (let i = 0; i <= splitNumber; i++) {
+        const y = this.chartArea.y + (this.chartArea.height / splitNumber) * i;
+        drawLine(y);
+      }
     }
     
     this.ctx.setLineDash([]);
@@ -192,12 +222,23 @@ class UCharts {
     // Y 轴标签
     this.ctx.textAlign = 'right';
     this.ctx.textBaseline = 'middle';
-    const splitNumber = this.yAxis.splitNumber || 4;
-    for (let i = 0; i <= splitNumber; i++) {
-      const y = this.chartArea.y + this.chartArea.height - (this.chartArea.height / splitNumber) * i;
-      const value = this.minY + (this.maxY - this.minY) * (i / splitNumber);
-      const label = this.formatValue(value);
-      this.ctx.fillText(label, this.chartArea.x - 10, y);
+    // 如果有自定义刻度，则使用自定义刻度
+    if (this.yAxis.ticks && this.yAxis.ticks.length > 0) {
+      this.yAxis.ticks.forEach(tickValue => {
+        const y = this.chartArea.y + this.chartArea.height - ((tickValue - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+        const label = this.formatValue(tickValue);
+        this.ctx.fillText(label, this.chartArea.x - 10, y);
+      });
+    } else {
+      const splitNumber = this.yAxis.splitNumber || 4;
+      for (let i = 0; i <= splitNumber; i++) {
+        // 与 drawGrid 保持一致：从顶部到底部绘制刻度
+        const y = this.chartArea.y + (this.chartArea.height / splitNumber) * i;
+        // 顶部显示最大值，底部显示最小值
+        const value = this.maxY - (this.maxY - this.minY) * (i / splitNumber);
+        const label = this.formatValue(value);
+        this.ctx.fillText(label, this.chartArea.x - 10, y);
+      }
     }
   }
   
@@ -253,6 +294,44 @@ class UCharts {
         }
       }
     });
+  }
+
+  // 绘制安全区背景
+  drawSafeRegion() {
+    const safe = this.extra && this.extra.safeRegion;
+    if (!safe) return;
+    let ySafeTop, ySafeBottom;
+    if (typeof safe.min === 'number' && typeof safe.max === 'number') {
+      // 区间安全区
+      ySafeTop = this.chartArea.y + this.chartArea.height - ((safe.max - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+      ySafeBottom = this.chartArea.y + this.chartArea.height - ((safe.min - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+      this.ctx.save();
+      this.ctx.fillStyle = safe.color || 'rgba(16,185,129,0.10)'; // 绿色安全区
+      this.ctx.fillRect(this.chartArea.x, ySafeTop, this.chartArea.width, ySafeBottom - ySafeTop);
+      this.ctx.restore();
+      // 上方异常区
+      this.ctx.save();
+      this.ctx.fillStyle = 'rgba(245,158,11,0.10)'; // 橙色异常区
+      this.ctx.fillRect(this.chartArea.x, this.chartArea.y, this.chartArea.width, ySafeTop - this.chartArea.y);
+      this.ctx.restore();
+      // 下方异常区
+      this.ctx.save();
+      this.ctx.fillStyle = 'rgba(245,158,11,0.10)'; // 橙色异常区
+      this.ctx.fillRect(this.chartArea.x, ySafeBottom, this.chartArea.width, this.chartArea.y + this.chartArea.height - ySafeBottom);
+      this.ctx.restore();
+    } else if (typeof safe.max === 'number') {
+      // max为安全上限
+      ySafeTop = this.chartArea.y + this.chartArea.height - ((safe.max - this.minY) / (this.maxY - this.minY)) * this.chartArea.height;
+      this.ctx.save();
+      this.ctx.fillStyle = safe.color || 'rgba(16,185,129,0.10)'; // 绿色安全区
+      this.ctx.fillRect(this.chartArea.x, ySafeTop, this.chartArea.width, this.chartArea.y + this.chartArea.height - ySafeTop);
+      this.ctx.restore();
+      // 上方异常区
+      this.ctx.save();
+      this.ctx.fillStyle = 'rgba(245,158,11,0.10)'; // 橙色异常区
+      this.ctx.fillRect(this.chartArea.x, this.chartArea.y, this.chartArea.width, ySafeTop - this.chartArea.y);
+      this.ctx.restore();
+    }
   }
 
   // 计算触点所在的数据索引
@@ -528,7 +607,25 @@ class UCharts {
         return rv == null ? '' : String(rv);
       }
     } catch (_) {}
-    return String(Math.round(v));
+    // 更合理的默认格式：
+    // - 若使用了自定义刻度（ticks），优先保持刻度的精度（整数/小数）
+    // - 否则根据当前 y 轴范围动态选择保留的小数位，避免全部显示为同一个整数
+    try {
+      if (this.yAxis && Array.isArray(this.yAxis.ticks) && this.yAxis.ticks.length > 0) {
+        const isInt = Math.abs(v - Math.round(v)) < 1e-6;
+        return isInt ? String(Math.round(v)) : String(Number(v.toFixed(2)));
+      }
+      const range = (this.maxY != null && this.minY != null) ? (this.maxY - this.minY) : 0;
+      if (range <= 1) {
+        return String(Number(v.toFixed(2)));
+      } else if (range <= 5) {
+        return String(Number(v.toFixed(1)));
+      } else {
+        return String(Math.round(v));
+      }
+    } catch (_) {
+      return String(Math.round(v));
+    }
   }
 
   // 绘制参考横线（从 extra.guideLines 读取）

@@ -10,12 +10,20 @@ Component({
     enableScroll: { type: Boolean, value: false },
     canvasId: { type: String, value: 'lineChartCanvas' },
     minimal: { type: Boolean, value: false },
+    // 是否显示背景区域（安全区/异常区），默认开启，可在页面按需关闭
+    showBackground: { type: Boolean, value: true },
     // 仅当为 HBV-DNA 定量时启用科学记数法与 y 轴固定范围
     scientific: { type: Boolean, value: false },
     // 可选：外部传入 y 轴最大值（仅科学模式下使用）
     yMax: { type: Number, value: null },
     // 可选：参考横线配置，传递给图表库 extra.guideLines
-    guideLines: { type: Array, value: [] }
+    guideLines: { type: Array, value: [] },
+    backgroundRegions: { type: Array, value: [] },
+    safeRegion: { type: Object, value: null },
+    yAxisTicks: { type: Array, value: null },
+    yAxisMax: { type: Number, value: null },
+    // 新增：非科学模式下可配置 y 轴最小值，确保参考线在显示范围内
+    yAxisMin: { type: Number, value: null }
   },
   data: {
     cWidth: 0,
@@ -63,7 +71,7 @@ Component({
   },
   methods: {
     renderChart() {
-      const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal, scientific, yMax, guideLines, _ctx2d, _canvasNode } = this.data;
+      const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal, scientific, yMax, guideLines, safeRegion, backgroundRegions, yAxisTicks, yAxisMin, yAxisMax, showBackground, _ctx2d, _canvasNode } = this.data;
       if (!categories || !series || !cWidth || !cHeight) return;
       // 自动设置 itemCount 为分类总数，实现全量显示
       const finalItemCount = (itemCount == null || itemCount <= 0) ? categories.length : itemCount;
@@ -94,9 +102,12 @@ Component({
         const sign = exp >= 0 ? '+' : '';
         return `${mStr}E${sign}${exp}`;
       }) : null;
-      const yAxis = useScientific
-        ? { gridType: minimal ? 'none' : 'dash', splitNumber: 4, min: 0, max: finalYMax }
-        : { gridType: minimal ? 'none' : 'dash', splitNumber: 4 };
+      // 在提供自定义刻度时强制使用虚线网格
+      const wantDashedGrid = Array.isArray(yAxisTicks) && yAxisTicks.length > 0;
+      const gridType = wantDashedGrid ? 'dash' : (minimal ? 'none' : 'dash');
+      const yAxis = scientific
+        ? { gridType, splitNumber: 4, min: 0, max: finalYMax, ticks: yAxisTicks || null }
+        : { gridType, splitNumber: 4, ticks: yAxisTicks || null, min: (yAxisMin != null ? yAxisMin : undefined), max: (yAxisMax != null ? yAxisMax : undefined) };
       this._chart = new UCharts({
         $this: this,
         canvasId: canvasId,
@@ -112,10 +123,15 @@ Component({
         dataLabel: false,
         dataPointShape: !minimal,
         enableScroll,
-        xAxis: { disableGrid: true, itemCount: finalItemCount, scrollShow: enableScroll },
+        xAxis: { disableGrid: false, itemCount: finalItemCount, scrollShow: enableScroll },
         yAxis,
         valueFormatter,
-        extra: { line: { type: 'curve' }, guideLines },
+        extra: { 
+          line: { type: 'curve' }, 
+          guideLines, 
+          backgroundRegions: showBackground ? backgroundRegions : [], 
+          safeRegion: showBackground ? safeRegion : null 
+        },
         tooltip: {
           show: true,
           bgColor: '#fff',
@@ -146,7 +162,7 @@ Component({
     }
   },
   observers: {
-    'categories, series, scientific, yMax, guideLines'(cats, ser, scientific, yMax, guideLines) {
+    'categories, series, scientific, yMax, guideLines, yAxisTicks, yAxisMin, yAxisMax, safeRegion, backgroundRegions, showBackground'(cats, ser, scientific, yMax, guideLines, yAxisTicks, yAxisMin, yAxisMax, safeRegion, backgroundRegions, showBackground) {
       if (!cats || !ser) return;
       if (this._chart && this._chart.updateData) {
         const newItemCount = cats.length || 0;
@@ -176,15 +192,23 @@ Component({
           const sign = exp >= 0 ? '+' : '';
           return `${mStr}E${sign}${exp}`;
         }) : null;
-        const yAxis = useScientific ? { min: 0, max: finalYMax } : {};
+        const wantDashedGrid = Array.isArray(yAxisTicks) && yAxisTicks.length > 0;
+        const gridType = wantDashedGrid ? 'dash' : 'dash';
+        const yAxis = useScientific 
+          ? { gridType, min: 0, max: finalYMax, ticks: yAxisTicks || null }
+          : { gridType, ticks: yAxisTicks || null, min: yAxisMin != null ? yAxisMin : undefined, max: yAxisMax != null ? yAxisMax : undefined };
         this._chart.updateData({ 
           categories: cats, 
           series: ser,
-          xAxis: { itemCount: newItemCount, scrollShow: false },
+          xAxis: { disableGrid: false, itemCount: newItemCount, scrollShow: false },
           yAxis,
           valueFormatter,
           enableScroll: false,
-          extra: { guideLines }
+          extra: { 
+            guideLines, 
+            backgroundRegions: showBackground ? backgroundRegions : [], 
+            safeRegion: showBackground ? safeRegion : null 
+          }
         });
       } else {
         this.renderChart();

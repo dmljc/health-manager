@@ -22,6 +22,9 @@ Page({
     // 图表数据
     chartCategories: [],
     chartSeries: [],
+    yAxisTicks: null,
+    safeRegion: null,
+    guideLines: [],
     
     // 当前显示的指标信息
     currentIndicators: [],
@@ -119,23 +122,48 @@ Page({
         { keys: ['FT4'], name: 'FT4' }
       ]);
     } else if (tab.id === 'biochem') {
-      // 生化：葡萄糖、总胆固醇、甘油三酯、HDL（中文字段兼容英文别名）
-      const raw = USER_DATA['肝功能常规'] || [];
+      // 生化：尿酸、甘油三酯
+      const raw = USER_DATA['生化全项'] || [];
       const records = this.sortByDate(this.filterRecordsByRange(raw, currentTimeRange));
       const categories = records.map(r => this.formatDateLabel(this.getDateValue(r)));
       const series = [
-        { name: '葡萄糖', data: records.map(r => Number(this.getField(r, ['葡萄糖', 'glucose']))), color: '#7C3AED' },
-        { name: '总胆固醇', data: records.map(r => Number(this.getField(r, ['总胆固醇', 'total_cholesterol']))), color: '#059669' },
+        // { name: '尿酸', data: records.map(r => Number(this.getField(r, ['尿酸', 'uric_acid']))), color: '#8B5CF6' },
         { name: '甘油三酯', data: records.map(r => Number(this.getField(r, ['甘油三酯', 'triglycerides']))), color: '#10B981' },
-        { name: '高密度脂蛋白胆固醇', data: records.map(r => Number(this.getField(r, ['高密度脂蛋白胆固醇', 'HDL_cholesterol']))), color: '#2563EB' }
       ];
       chartData = { categories, series };
       indicators = this.buildIndicatorsFromLatest(records, [
-        { keys: ['葡萄糖', 'glucose'], name: '葡萄糖' },
-        { keys: ['总胆固醇', 'total_cholesterol'], name: '总胆固醇' },
+        // { keys: ['尿酸', 'uric_acid'], name: '尿酸' },
         { keys: ['甘油三酯', 'triglycerides'], name: '甘油三酯' },
-        { keys: ['高密度脂蛋白胆固醇', 'HDL_cholesterol'], name: '高密度脂蛋白胆固醇' }
       ]);
+
+      // 检查是否为尿酸或甘油三酯，并应用特殊配置
+      const seriesNames = series.map(s => s.name);
+      if (seriesNames.includes('尿酸')) {
+        this.setData({
+          yAxisTicks: [0, 208, 428],
+          safeRegion: { min: 208, max: 428, color: '#D1FAE5' }, // 绿色安全区
+          backgroundRegions: [
+            { min: 0, max: 208, color: '#FEF3C7' }, // 橙色异常区
+            { min: 428, max: 600, color: '#FEF3C7' } // 橙色异常区，max需要一个比数据最大值大的数
+          ],
+          guideLines: [
+            { y: 208, color: '#DC2626', width: 1, dash: [4, 4] },
+            { y: 428, color: '#DC2626', width: 1, dash: [4, 4] }
+          ]
+        });
+      } else if (seriesNames.includes('甘油三酯')) {
+        this.setData({
+          yAxisTicks: null, // 使用自动刻度
+          yAxisMax: 2.75,
+          safeRegion: { max: 1.7, color: '#D1FAE5' }, // 绿色安全区
+          backgroundRegions: [
+            { min: 1.7, max: 2.75, color: '#FEF3C7' } // 橙色异常区
+          ],
+          guideLines: [{ y: 1.7, color: '#F59E0B', dash: [5, 5] }]
+        });
+      } else {
+        this.setData({ yAxisTicks: null, safeRegion: null, guideLines: [] });
+      }
     }
     
     this.setData({
