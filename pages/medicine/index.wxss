@@ -25,6 +25,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    /* 改为纵向排列，实现换行展示 */
     color: #ffffff;
     font-size: 36rpx;
     font-weight: 700;
@@ -46,10 +48,22 @@
     background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
 }
 
+/* 新增时间文本样式，使其与状态文本分行显示 */
+.time-text {
+    display: block;
+    font-size: 24rpx;
+    font-weight: 500;
+    margin-bottom: 8rpx;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.18);
+}
+
 .circle-text {
     letter-spacing: 1rpx;
     text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.18);
 }
+
+
 
 /* 药物余量显示 - 大红圆右侧 */
 .medicine-remaining {
@@ -109,8 +123,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 /* iOS极简风格弹框 */

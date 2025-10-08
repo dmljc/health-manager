@@ -1,12 +1,11 @@
 <!-- 服药模块（精简协调版） -->
 <view class="medicine-page">
     <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
-    
     <view class="circle-wrapper">
         <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="toggleMedicineStatus" hover-class="tap-active" hover-stay-time="80">
+            <text class="circle-time">{{hasTakenToday && medicineRecord ? medicineRecord.time : ''}}</text>
             <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
         </view>
-        
         <!-- 药物余量显示 - 在大红圆右侧 -->
         <view class="medicine-remaining" bind:tap="onMedicineCountTap">
             <text class="medicine-icon">💊</text>
@@ -17,13 +16,11 @@
             </text>
         </view>
     </view>
-    
     <!-- iOS风格弹框 -->
     <view wx:if="{{showModal}}" class="modal-overlay modal-overlay--show" bindtap="closeModal">
         <view class="modal-container" catchtap="preventClose">
             <!-- 标题 -->
             <text class="modal-title">💊设置药物总量</text>
-            
             <!-- 当前信息 -->
             <view class="modal-current-info">
                 <text class="current-text">药物总量指一盒有多少颗药</text>
@@ -32,15 +29,16 @@
             <view class="modal-input-section">
                 <view class="input-wrapper">
                     药物总量:
-                    <input class="modal-input" type="number" placeholder="请输入数量" value="{{modalTotalInput}}" bindinput="onModalTotalInput" focus="{{modalInputFocus}}"/>
+                    <input class="modal-input" type="number" placeholder="请输入数量" value="{{modalTotalInput}}" bindinput="onModalTotalInput" focus="{{modalInputFocus}}" />
                     颗
                 </view>
             </view>
-            
             <!-- 按钮区域 -->
             <view class="modal-actions">
                 <button class="modal-btn modal-btn--neutral" bindtap="closeModal">取消</button>
-                <button class="modal-btn modal-btn--primary" bindtap="confirmTotalChange">确认</button>
+                <button class="modal-btn modal-btn--primary" bindtap="confirmTotalChange">
+                    确认
+                </button>
             </view>
         </view>
     </view>

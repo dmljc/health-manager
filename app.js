@@ -13,6 +13,19 @@ App({
     onLaunch() {
         console.log("健康管理小程序启动");
 
+        // 初始化云开发能力
+        if (wx.cloud && typeof wx.cloud.init === 'function') {
+            try {
+                wx.cloud.init({
+                    // 如需指定环境，请在此填写 envId；不填则默认当前环境
+                    env: 'cloud1-3grp4xen3b5be11c',
+                    traceUser: true,
+                });
+            } catch (e) {
+                console.warn('初始化云开发失败', e);
+            }
+        }
+
         this.initSystemInfo();
         this.initTheme();
         this.initStorage();
