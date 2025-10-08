@@ -80,6 +80,16 @@ Component({
         if (hasTriglycerides) {
           return [0, 1.7];
         }
+        // 新增：HBV-DNA定量在科学计数法下使用自定义刻度，去掉顶部最大值刻度
+        const hasHBVDNA = (series || []).some(s => {
+          const name = String(s && s.name || '').toLowerCase();
+          // 仅针对 HBV-DNA 定量系列匹配，避免误中“乙肝表面抗原定量”
+          return name.includes('hbv-dna') || name.includes('dna');
+        });
+        if (hasHBVDNA) {
+          // 仅显示 0E0 / 1.5E+1 / 3.0E+1 / 4.5E+1，对应数值 [0, 15, 30, 45]
+          return [0, 15, 30, 45];
+        }
       } catch (_) {}
       return null;
     },

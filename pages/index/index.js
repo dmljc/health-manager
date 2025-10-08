@@ -80,12 +80,15 @@ Page({
             title: name, 
             categories, 
             series: adjSeries,
-            // 仅 HBV-DNA 定量启用科学记数法与固定 yMax=60
+            // 仅 HBV-DNA 定量启用科学记数法，固定 yMax=45（4.5E+1）
             scientific: true,
-            yMax: threshold * 2,
+            yMax: threshold + oneThird,
+            yAxisTicks: [0, oneThird, threshold, threshold + oneThird],
             guideLines: [
               { y: threshold, color: '#DC2626', width: 1, dash: [4,4] },
-              { y: oneThird, color: '#A3A3A3', width: 1 }
+              { y: oneThird, color: '#A3A3A3', width: 1 },
+              // 覆盖 4.5E+1 位置的虚线为实线（与网格同色）
+              { y: threshold + oneThird, color: '#E5E7EB', width: 1 }
             ]
           });
         } else {
