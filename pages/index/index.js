@@ -99,7 +99,7 @@ Page({
               scientific: false,
               showBackground: false,
               yAxisMin: 0,
-              yAxisTicks: [208, 428],
+              yAxisTicks: [0, 208, 428],
               safeRegion: { min: 208, max: 428, color: '#D1FAE5' },
               backgroundRegions: [
                 { min: 0, max: 208, color: '#FEF3C7' },
@@ -125,7 +125,7 @@ Page({
                 { min: 1.7, max: 2.75, color: '#FEF3C7' }
               ],
               guideLines: [
-                { y: 1.7, color: '#F59E0B', dash: [5,5] }
+                { y: 1.7, color: '#DC2626', width: 1, dash: [4,4] }
               ]
             });
           } else {

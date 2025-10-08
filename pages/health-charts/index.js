@@ -159,7 +159,7 @@ Page({
           backgroundRegions: [
             { min: 1.7, max: 2.75, color: '#FEF3C7' } // 橙色异常区
           ],
-          guideLines: [{ y: 1.7, color: '#F59E0B', dash: [5, 5] }]
+          guideLines: [{ y: 1.7, color: '#DC2626', width: 1, dash: [4, 4] }]
         });
       } else {
         this.setData({ yAxisTicks: null, safeRegion: null, guideLines: [] });
