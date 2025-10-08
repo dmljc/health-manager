@@ -28,7 +28,7 @@ function generateTodayTasks() {
             icon: '💊',
             status: 'pending',
             statusText: '待完成',
-            action: 'goMeds'
+            action: 'goMedicine'
         });
     }
 
@@ -130,7 +130,7 @@ function generateHealthReminders(medicineStatus, checkupStatus, healthScore) {
             description: '请注意按时服药和定期体检，保持健康生活习惯',
             icon: '💚',
             priority: 'medium',
-            action: 'goStats'
+            action: 'goStatistics'
         });
     }
 

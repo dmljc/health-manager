@@ -1,5 +1,5 @@
 <!-- 服药模块（精简协调版） -->
-<view class="meds-page">
+<view class="medicine-page">
     <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
     
     <view class="circle-wrapper">

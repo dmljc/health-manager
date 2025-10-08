@@ -1,7 +1,7 @@
 /* 服药模块样式（精简协调版） */
 @import "../../styles/theme.wxss";
 
-.meds-page {
+.medicine-page {
     min-height: 100vh;
     background: var(--color-bg);
     padding: 48rpx 24rpx calc(80rpx + env(safe-area-inset-bottom));
