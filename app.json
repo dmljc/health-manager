@@ -3,8 +3,6 @@
     "pages": [
         "pages/index/index",
         "pages/medicine/index",
-        "pages/checkups/index",
-        "pages/expense/index",
         "pages/statistics/index"
     ],
     "window": {
@@ -29,22 +27,10 @@
                 "text": "首页"
             },
             {
-                "pagePath": "pages/checkups/index",
-                "iconPath": "images/icons/checkup.png",
-                "selectedIconPath": "images/icons/checkup-active.png",
-                "text": "体检"
-            },
-            {
                 "pagePath": "pages/medicine/index",
                 "iconPath": "images/icons/meds.png",
                 "selectedIconPath": "images/icons/meds-active.png",
                 "text": "服药"
-            },
-            {
-                "pagePath": "pages/expense/index",
-                "iconPath": "images/icons/expense.png",
-                "selectedIconPath": "images/icons/expense-active.png",
-                "text": "费用"
             },
             {
                 "pagePath": "pages/statistics/index",
