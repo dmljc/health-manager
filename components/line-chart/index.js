@@ -35,9 +35,12 @@ Component({
   lifetimes: {
     attached() {
       // 微信小程序环境初始化
-      const sys = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
-      const pixelRatio = Math.max(1, Math.min(sys.pixelRatio || 1, 3));
-      const windowWidth = sys.windowWidth;
+      // 优先使用新版 API，避免使用已废弃的 wx.getSystemInfoSync
+      const winInfo = (wx.getWindowInfo && typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : null;
+      // 像素比取窗口信息，不可用则回退安全默认值 2
+      const pixelRatio = Math.max(1, Math.min((winInfo && winInfo.pixelRatio) || 2, 3));
+      // 窗口宽度仅从 winInfo 获取，不可用则回退到常用默认值 375
+      const windowWidth = (winInfo && winInfo.windowWidth) || 375;
       const pagePadding = 24 * windowWidth / 750;
       const cardPadding = 16 * windowWidth / 750;
       const cWidth = Math.floor(windowWidth - pagePadding * 2 - cardPadding * 2);

@@ -10,7 +10,6 @@
           series="{{item.series}}"
           minimal="{{true}}"
           scientific="{{true}}"
-          canvas-id="{{'chart-' + index}}"
         >
         </line-chart>
       </block>
@@ -22,7 +21,6 @@
             series="{{item.series}}"
             minimal="{{true}}"
             scientific="{{false}}"
-            canvas-id="{{'chart-' + index}}"
             show-background="{{item.showBackground}}"
             safe-region="{{item.safeRegion}}"
             background-regions="{{item.backgroundRegions}}"
@@ -41,7 +39,6 @@
               series="{{item.series}}"
               minimal="{{true}}"
               scientific="{{false}}"
-              canvas-id="{{'chart-' + index}}"
               show-background="{{item.showBackground}}"
               safe-region="{{item.safeRegion}}"
               background-regions="{{item.backgroundRegions}}"
@@ -57,7 +54,6 @@
               series="{{item.series}}"
               minimal="{{true}}"
               scientific="{{false}}"
-              canvas-id="{{'chart-' + index}}"
             >
             </line-chart>
           </block>

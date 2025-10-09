@@ -49,10 +49,23 @@ const { formatCurrentDate } = require("../../utils/date");
     // 底部导航切换震动反馈
     vibrateForAction("tap");
     this.initPageData();
-    this.loadMedicineStatus();
-    this.loadMedicineData();
+    // 将耗时工作延后到下一帧，减少 onShow 同步阶段耗时
+    const shouldFetchList = !(Array.isArray(this.data.medicineList) && this.data.medicineList.length > 0);
+    if (typeof wx.nextTick === 'function') {
+      wx.nextTick(() => {
+        this.loadMedicineStatus();
+        this.loadMedicineData();
+        if (shouldFetchList) this.getMedicineList();
+      });
+    } else {
+      setTimeout(() => {
+        this.loadMedicineStatus();
+        this.loadMedicineData();
+        if (shouldFetchList) this.getMedicineList();
+      }, 0);
+    }
 
-    // 确保弹框状态重置
+    // 确保弹框状态重置（与页面基础数据分开，避免多次 setData 堵塞）
     this.setData({
       showModal: false,
       modalInputFocus: false,
@@ -74,8 +87,6 @@ const { formatCurrentDate } = require("../../utils/date");
       todayDate: dateParts[0],
       todayWeekday: dateParts[1],
     });
-
-    this.getMedicineList();
   },
 
   // 组件事件（如需联动，可在此接收）
@@ -145,6 +156,13 @@ const { formatCurrentDate } = require("../../utils/date");
    * @returns {void}
    */
   getMedicineList() {
+    // 按需初始化云开发，避免应用启动阶段触发 SDK 内部警告
+    try {
+      if (wx.cloud && typeof wx.cloud.init === 'function' && !wx.cloud._inited) {
+        wx.cloud.init({ env: 'cloud1-3grp4xen3b5be11c', traceUser: false });
+        wx.cloud._inited = true;
+      }
+    } catch (_) {}
     wx.cloud.callFunction({
       name: "medicineList", // 云函数名称（对应接口逻辑）
       success: (res) => {
@@ -171,6 +189,14 @@ const { formatCurrentDate } = require("../../utils/date");
         console.warn("getMedicineData: 未提供 id，已跳过查询");
         return;
       }
+
+      // 按需初始化云开发
+      try {
+        if (wx.cloud && typeof wx.cloud.init === 'function' && !wx.cloud._inited) {
+          wx.cloud.init({ env: 'cloud1-3grp4xen3b5be11c', traceUser: false });
+          wx.cloud._inited = true;
+        }
+      } catch (_) {}
 
       if (!wx.cloud || !wx.cloud.database) {
         console.error("getMedicineData: 云开发未初始化或不可用");
@@ -273,6 +299,11 @@ const { formatCurrentDate } = require("../../utils/date");
         const dateStr = targetDate; // 使用选择的日期或今天
         const timeStr = time; // 当前时间字符串
         try {
+          // 按需初始化云开发
+          if (wx.cloud && typeof wx.cloud.init === 'function' && !wx.cloud._inited) {
+            wx.cloud.init({ env: 'cloud1-3grp4xen3b5be11c', traceUser: false });
+            wx.cloud._inited = true;
+          }
           wx.cloud
             .callFunction({
               name: "medicineStatus",

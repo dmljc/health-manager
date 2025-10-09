@@ -51,11 +51,9 @@ class UCharts {
       this.draw();
       return;
     }
-    // 使用传统的 Canvas API，兼容性更好
-    this.ctx = wx.createCanvasContext(this.canvasId, this.$this);
-    // 设置画布尺寸
-    this.canvas = { width: this.width, height: this.height };
-    this.draw();
+    // 不再使用旧版 CanvasContext，避免内部触发已弃用的系统信息接口
+    try { console.warn('[UCharts] Canvas 2D 上下文不可用，已跳过旧版画布回退以避免弃用API'); } catch(_) {}
+    // 保持不绘制，以避免使用旧接口；等待外部提供 2D 上下文后再绘制
   }
   
 

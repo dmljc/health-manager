@@ -33,7 +33,7 @@
     },
     "appid": "wx8ed17c8fdc502088",
     "projectname": "health-manager",
-    "libVersion": "2.32.3",
+    "libVersion": "3.10.0",
     "condition": {},
     "simulatorPluginLibVersion": {},
     "packOptions": {

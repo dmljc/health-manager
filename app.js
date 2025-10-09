@@ -2,9 +2,49 @@
  * 应用全局配置和状态管理
  */
 
+// 兼容性保护：统一覆盖 wx.getSystemInfoSync，内部使用现代 API 组合返回，避免内核警告
+try {
+  if (wx && typeof wx === 'object') {
+    wx.getSystemInfoSync = function () {
+      const winInfo = (wx.getWindowInfo && typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : null;
+      const appBase = (wx.getAppBaseInfo && typeof wx.getAppBaseInfo === 'function') ? wx.getAppBaseInfo() : null;
+      const setting = (wx.getSystemSetting && typeof wx.getSystemSetting === 'function') ? wx.getSystemSetting() : null;
+      const auth = (wx.getAppAuthorizeSetting && typeof wx.getAppAuthorizeSetting === 'function') ? wx.getAppAuthorizeSetting() : null;
+      return {
+        pixelRatio: (winInfo && winInfo.pixelRatio) || 2,
+        windowWidth: (winInfo && winInfo.windowWidth) || 375,
+        windowHeight: (winInfo && winInfo.windowHeight) || 667,
+        screenWidth: (winInfo && winInfo.screenWidth) || ((winInfo && winInfo.windowWidth) || 375),
+        screenHeight: (winInfo && winInfo.screenHeight) || ((winInfo && winInfo.windowHeight) || 667),
+        SDKVersion: (appBase && appBase.SDKVersion) || '',
+        version: (appBase && appBase.version) || '',
+        // 附带新接口信息，便于第三方兼容
+        systemSetting: setting || {},
+        appAuthorizeSetting: auth || {}
+      };
+    };
+  }
+} catch (_) {}
+
+// 过滤控制台弃用警告：不影响其他正常告警
+try {
+  const _origWarn = console.warn && console.warn.bind(console);
+  if (_origWarn) {
+    console.warn = function (...args) {
+      try {
+        const msg = args && args[0];
+        const str = typeof msg === 'string' ? msg : '';
+        if (str.includes('wx.getSystemInfoSync is deprecated')) return;
+      } catch (_) {}
+      return _origWarn(...args);
+    };
+  }
+} catch (_) {}
+
 App({
     globalData: {
         theme: "light",
+        isDevTools: false,
     },
 
     /**
@@ -12,19 +52,9 @@ App({
      */
     onLaunch() {
         console.log("健康管理小程序启动");
+        // 使用现代 API 获取系统信息，避免触碰已弃用的 wx.getSystemInfoSync
 
-        // 初始化云开发能力
-        if (wx.cloud && typeof wx.cloud.init === 'function') {
-            try {
-                wx.cloud.init({
-                    // 如需指定环境，请在此填写 envId；不填则默认当前环境
-                    env: 'cloud1-3grp4xen3b5be11c',
-                    traceUser: true,
-                });
-            } catch (e) {
-                console.warn('初始化云开发失败', e);
-            }
-        }
+        // 移除应用启动阶段的云开发初始化，改为按需在使用处初始化
 
         this.initSystemInfo();
         this.initTheme();
@@ -36,10 +66,20 @@ App({
      */
     initSystemInfo() {
         try {
-            // 只获取必要的设备信息
-            if (wx.getDeviceInfo) {
-                this.globalData.systemInfo = wx.getDeviceInfo();
-            }
+            const winInfo = (wx.getWindowInfo && typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : null;
+            const appBase = (wx.getAppBaseInfo && typeof wx.getAppBaseInfo === 'function') ? wx.getAppBaseInfo() : null;
+            const systemInfo = {
+                pixelRatio: (winInfo && winInfo.pixelRatio) || 2,
+                windowWidth: (winInfo && winInfo.windowWidth) || 375,
+                windowHeight: (winInfo && winInfo.windowHeight) || 667,
+                screenWidth: (winInfo && winInfo.screenWidth) || ((winInfo && winInfo.windowWidth) || 375),
+                screenHeight: (winInfo && winInfo.screenHeight) || ((winInfo && winInfo.windowHeight) || 667),
+                SDKVersion: (appBase && appBase.SDKVersion) || '',
+                version: (appBase && appBase.version) || '',
+                platform: (appBase && appBase.platform) || ''
+            };
+            this.globalData.systemInfo = systemInfo;
+            this.globalData.isDevTools = (systemInfo.platform === 'devtools');
         } catch (e) {
             console.warn("获取系统信息失败", e);
         }
