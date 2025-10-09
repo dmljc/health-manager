@@ -1,0 +1,9 @@
+{
+  "name": "medicineInventory",
+  "version": "1.0.0",
+  "description": "云函数：管理药物库存数据",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "^3.0.1"
+  }
+}

@@ -2,7 +2,7 @@
 <view class="medicine-page">
     <date-picker refresh-key="{{datePickerRefreshKey}}" bind:change="onDateChange" bind:monthchange="onMonthChange" />
     <view class="circle-wrapper">
-        <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="toggleMedicineStatus" hover-class="tap-active" hover-stay-time="80">
+        <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="handleMedicineStatusToggle" hover-class="tap-active" hover-stay-time="80">
             <text class="circle-time">{{hasTakenToday && medicineRecord ? medicineRecord.time : ''}}</text>
             <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
         </view>
