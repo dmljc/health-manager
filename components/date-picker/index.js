@@ -134,7 +134,11 @@ Component({
             const map = {};
             for (const r of medRecords) {
                 if (typeof r.date === "string" && r.date.startsWith(monthKey)) {
-                    map[r.date] = r.taken ? "success" : "fail";
+                    const taken =
+                        typeof r.status !== "undefined"
+                            ? Number(r.status) === 1
+                            : !!r.taken;
+                    map[r.date] = taken ? "success" : "fail";
                 }
             }
             return map;

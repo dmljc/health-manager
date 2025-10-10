@@ -1,6 +1,6 @@
 // 云函数入口文件
 const { vibrateForAction } = require("../../utils/vibrate");
-const { formatCurrentDate, getToday } = require("../../utils/date");
+const { formatCurrentDate, getToday, getCurrentTimeHHmm } = require("../../utils/date");
 
 Page({
   data: {
@@ -46,12 +46,13 @@ Page({
       });
 
       const list = res.result && res.result.list ? res.result.list : [];
-      const todayRecord = list.find(record => record.date === this.data.todayDate);
+      const todayRecord = list.find((record) => record.date === this.data.todayDate);
 
       if (todayRecord) {
+        const takenByStatus = typeof todayRecord.status !== "undefined" ? Number(todayRecord.status) === 1 : !!todayRecord.taken;
         this.setData({
           queryId: todayRecord._id || todayRecord.id || "",
-          hasTakenToday: !!todayRecord.taken,
+          hasTakenToday: takenByStatus,
           medicineRecord: todayRecord,
         });
       } else {
@@ -63,7 +64,16 @@ Page({
         });
       }
 
-      this.setData({ medicineList: list });
+      // 将云端列表缓存到本地供日期组件显示点位，并刷新网格
+      try {
+        wx.setStorageSync("med_records", list);
+      } catch (e) {
+        console.warn("写入本地缓存失败 med_records:", e);
+      }
+      this.setData({
+        medicineList: list,
+        datePickerRefreshKey: this.data.datePickerRefreshKey + 1,
+      });
     } catch (err) {
       console.error("云函数调用失败:", err);
     }
@@ -87,9 +97,10 @@ Page({
 
       const todayRecord = list.find((record) => record.date === this.data.todayDate);
       if (todayRecord) {
+        const takenByStatus = typeof todayRecord.status !== "undefined" ? Number(todayRecord.status) === 1 : !!todayRecord.taken;
         this.setData({
           queryId: todayRecord._id || todayRecord.id || "",
-          hasTakenToday: !!todayRecord.taken,
+          hasTakenToday: takenByStatus,
           medicineRecord: todayRecord,
         });
         return todayRecord;
@@ -108,29 +119,18 @@ Page({
   async handleMedicineStatusToggle() {
     console.log("handleMedicineStatusToggle method triggered");
 
-    const todayRecord = await this.fetchTodayRecord();
-    if (!todayRecord) {
-      console.error("无法获取当天记录，操作终止");
-      return;
-    }
-
-    const currentDayId = todayRecord._id || todayRecord.id || "";
-    const newStatus = todayRecord.taken ? 0 : 1; // 使用 taken 布尔切换
+    const newStatus = this.data.hasTakenToday ? 0 : 1; // 直接基于本地状态切换 0/1
 
     this.setData({ isToggling: true }); // 显示加载状态
 
-    this.updateMedicineData(currentDayId, newStatus)
-      .then(() => {
-        this.setData({
+      this.updateMedicineData(newStatus)
+        .then(() => {
+          this.setData({
           hasTakenToday: newStatus === 1, // 更新本地状态
           isToggling: false, // 关闭加载状态
-        });
-        wx.showToast({
-          title: "状态更新成功",
-          icon: "success",
-        });
-        console.log("药物状态更新成功");
-      })
+          });
+          console.log("药物状态更新成功");
+        })
       .catch((err) => {
         this.setData({ isToggling: false }); // 关闭加载状态
         wx.showToast({
@@ -141,7 +141,7 @@ Page({
       });
   },
 
-  async updateMedicineData(currentDayId, medicineStatus) {
+  async updateMedicineData(medicineStatus) {
     try {
       if (!wx.cloud || !wx.cloud._inited) {
         wx.cloud.init({
@@ -155,6 +155,7 @@ Page({
         data: {
           status: medicineStatus,
           date: this.data.todayDate,
+          time: getCurrentTimeHHmm(),
         },
       });
 
@@ -163,15 +164,48 @@ Page({
         throw new Error(res.result && res.result.error || "update failed");
       }
 
-      const record = res.result.record;
+      // 更新成功后拉取最新列表以刷新本地缓存与 UI
+      const resList = await wx.cloud.callFunction({
+        name: "medicineList",
+        data: {},
+      });
+
+      const list = resList.result && resList.result.list ? resList.result.list : [];
+      const todayRecord = list.find((record) => record.date === this.data.todayDate);
+      const takenByStatus = todayRecord
+        ? (typeof todayRecord.status !== "undefined" ? Number(todayRecord.status) === 1 : !!todayRecord.taken)
+        : false;
+
+      // 写入缓存并刷新日期组件
+      try {
+        wx.setStorageSync("med_records", list);
+      } catch (e) {
+        console.warn("写入本地缓存失败 med_records:", e);
+      }
+
       this.setData({
-        hasTakenToday: !!(record && record.taken),
-        medicineRecord: record || null,
+        hasTakenToday: takenByStatus,
+        medicineRecord: todayRecord || null,
+        medicineList: list,
+        datePickerRefreshKey: this.data.datePickerRefreshKey + 1,
       });
     } catch (err) {
       console.error("云函数调用失败:", err);
       throw err;
     }
+  },
+
+  // 日期组件事件：选中日期变化
+  onDateChange(e) {
+    const date = e && e.detail && e.detail.value ? e.detail.value : "";
+    if (!date) return;
+    this.setData({ selectedDate: date });
+  },
+
+  // 日期组件事件：月份变化（可用于按需懒加载或统计）
+  onMonthChange(e) {
+    // 这里只记录变化，必要时可触发数据拉取或统计
+    // const { year, month } = e.detail || {}; console.log('monthchange', year, month);
   },
 
   onLoad(options) {

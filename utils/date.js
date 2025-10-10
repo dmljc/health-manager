@@ -48,9 +48,20 @@ function formatDate(dateStr) {
     return `${month}月${day}日`;
 }
 
+/**
+ * 获取当前时间字符串（HH:mm）
+ */
+function getCurrentTimeHHmm() {
+    const now = new Date();
+    const hh = `${now.getHours()}`.padStart(2, '0');
+    const mm = `${now.getMinutes()}`.padStart(2, '0');
+    return `${hh}:${mm}`;
+}
+
 module.exports = {
     getGreeting,
     formatCurrentDate,
     getToday,
     formatDate,
+    getCurrentTimeHHmm,
 };
