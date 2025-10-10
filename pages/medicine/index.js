@@ -1,5 +1,5 @@
 // 云函数入口文件
-const { vibrateForAction } = require("../../utils/vibrate");
+const { vibrateForAction, vibrateLight } = require("../../utils/vibrate");
 const { formatCurrentDate, getToday, getCurrentTimeHHmm } = require("../../utils/date");
 
 Page({
@@ -119,6 +119,11 @@ Page({
   async handleMedicineStatusToggle() {
     console.log("handleMedicineStatusToggle method triggered");
 
+    // 触发轻震动反馈（点击操作）
+    try {
+      vibrateForAction && vibrateForAction('click');
+    } catch (_) {}
+
     const newStatus = this.data.hasTakenToday ? 0 : 1; // 直接基于本地状态切换 0/1
 
     this.setData({ isToggling: true }); // 显示加载状态
@@ -139,6 +144,13 @@ Page({
         });
         console.error("药物状态更新失败:", err);
       });
+  },
+
+  // 底部 Tab 点击切换到“服药”时触发震动反馈
+  onTabItemTap(item) {
+    try {
+      vibrateLight && vibrateLight({ type: 'light', silent: true });
+    } catch (_) {}
   },
 
   async updateMedicineData(medicineStatus) {
