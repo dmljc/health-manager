@@ -225,6 +225,87 @@ Page({
     // const { year, month } = e.detail || {}; console.log('monthchange', year, month);
   },
 
+  // 双击药物余量打开“设置药物总量”弹框
+  onMedicineCountTap(e) {
+    const now = (e && (e.timeStamp || e.detail && e.detail.timeStamp)) ? (e.timeStamp || e.detail.timeStamp) : Date.now();
+    const last = this.data.lastTapTime || 0;
+    // 350ms 内视为双击
+    if (now - last < 350) {
+      this.openModal();
+      // 重置，避免三连击误触
+      this.setData({ lastTapTime: 0 });
+      return;
+    }
+    this.setData({ lastTapTime: now });
+  },
+
+  // 打开设置总量弹框
+  openModal() {
+    try { vibrateForAction && vibrateForAction('click'); } catch (_) {}
+    const initValue = String(this.data.medicineTotal || '').trim();
+    this.setData({
+      showModal: true,
+      modalInputFocus: true,
+      modalTotalInput: initValue,
+    });
+  },
+
+  // 关闭弹框
+  closeModal() {
+    this.setData({
+      showModal: false,
+      modalInputFocus: false,
+    });
+  },
+
+  // 阻止弹框容器点击冒泡关闭
+  preventClose() {
+    // no-op
+    return null;
+  },
+
+  // 输入框变更
+  onModalTotalInput(e) {
+    const raw = e && e.detail ? e.detail.value : '';
+    const onlyDigits = String(raw).replace(/[^\d]/g, '');
+    this.setData({ modalTotalInput: onlyDigits });
+  },
+
+  // 根据总量与剩余量计算颜色级别
+  computeRemainingColorClass(total, remaining) {
+    const t = Number(total) || 0;
+    const r = Number(remaining) || 0;
+    if (t <= 0) return 'normal';
+    const dangerThreshold = Math.max(1, Math.floor(t * 0.1));
+    const warnThreshold = Math.max(3, Math.floor(t * 0.25));
+    if (r <= dangerThreshold) return 'danger';
+    if (r <= warnThreshold) return 'warning';
+    return 'normal';
+  },
+
+  // 确认更新总量
+  confirmTotalChange() {
+    const v = String(this.data.modalTotalInput || '').trim();
+    const nextTotal = Number(v);
+    if (!Number.isFinite(nextTotal) || nextTotal <= 0) {
+      wx.showToast({ title: '请输入有效的总量', icon: 'none' });
+      return;
+    }
+
+    // 更新总量并刷新颜色标识
+    const nextColor = this.computeRemainingColorClass(nextTotal, this.data.medicineRemaining);
+    this.setData({
+      medicineTotal: nextTotal,
+      medicineColorClass: nextColor,
+      showModal: false,
+      modalInputFocus: false,
+      modalTotalInput: '',
+    });
+
+    // 可选：持久化到本地，后续可接入云函数
+    try { wx.setStorageSync('medicine_total', nextTotal); } catch (_) {}
+  },
+
   onLoad(options) {
     const todayDate = getToday(); // 使用 YYYY-MM-DD
     console.log("初始化 todayDate:", todayDate); // 打印 todayDate
