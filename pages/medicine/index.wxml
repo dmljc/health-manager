@@ -5,6 +5,9 @@
         <view class="toggle-circle {{hasTakenToday ? 'circle--green' : 'circle--red'}} {{isToggling ? 'circle--press' : ''}}" bindtap="handleMedicineStatusToggle" hover-class="tap-active" hover-stay-time="80">
             <text class="circle-time">{{hasTakenToday && medicineRecord ? medicineRecord.time : ''}}</text>
             <text class="circle-text">{{hasTakenToday ? '已服药' : '未服药'}}</text>
+            <view wx:if="{{isToggling}}" class="loading-overlay">
+                <view class="loading-spinner"></view>
+            </view>
         </view>
         <!-- 药物余量显示 - 在大红圆右侧 -->
         <view class="medicine-remaining" bind:tap="onMedicineCountTap">

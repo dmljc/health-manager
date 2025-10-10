@@ -33,6 +33,7 @@
     box-shadow: 0 10rpx 30rpx rgba(17, 24, 39, 0.14);
     border: 1rpx solid rgba(17, 24, 39, 0.04);
     transition: transform .16s ease, filter .16s ease, background .2s ease, box-shadow .2s ease;
+    position: relative;
 }
 
 .circle--press {
@@ -61,6 +62,31 @@
 .circle-text {
     letter-spacing: 1rpx;
     text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.18);
+}
+
+/* 加载遮罩与指示器 */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.12);
+    border-radius: 50%;
+}
+
+.loading-spinner {
+    width: 56rpx;
+    height: 56rpx;
+    border: 6rpx solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
 }
 
 

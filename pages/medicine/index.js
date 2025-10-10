@@ -124,6 +124,11 @@ Page({
       vibrateForAction && vibrateForAction('click');
     } catch (_) {}
 
+    // 防重复点击：正在切换时直接返回
+    if (this.data.isToggling) {
+      return;
+    }
+
     const newStatus = this.data.hasTakenToday ? 0 : 1; // 直接基于本地状态切换 0/1
 
     this.setData({ isToggling: true }); // 显示加载状态
