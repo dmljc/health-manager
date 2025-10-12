@@ -15,8 +15,7 @@
             <text class="medicine-count">
                 <text class="remaining-count {{medicineColorClass}}">{{medicineRemaining}}</text>
                 <text class="number-slash">/</text>
-                <!-- <text class="total-count">{{medicineTotal}}</text> -->
-                <text class="total-count">28</text>
+                <text class="total-count">{{medicineTotal}}</text>
             </text>
         </view>
     </view>
