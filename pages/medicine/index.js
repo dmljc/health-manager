@@ -194,7 +194,6 @@ Page({
           status: medicineStatus,
           date: this.data.todayDate,
           time: getCurrentTimeHHmm(),
-          medicineTotal: total,
           medicineRemaining: nextRemaining,
         },
       });
@@ -352,7 +351,6 @@ Page({
         name: "medicineStatus",
         data: {
           action: 'inventoryUpdate',
-          medicineTotal: fixedTotal,
           medicineRemaining: nextRemaining,
         }
       });

@@ -7,13 +7,11 @@ const db = cloud.database();
 //   status?: 0 | 1,
 //   date?: 'YYYY-MM-DD',
 //   time?: 'HH:mm',
-//   medicineTotal?: number,
 //   medicineRemaining?: number,
-//   userId?: string,
 //   action?: 'inventoryUpdate' | undefined
 // }
 exports.main = async (event, context) => {
-  const { status, date, time, medicineTotal, medicineRemaining, action } = event || {};
+  const { status, date, time, medicineRemaining, action } = event || {};
   const wxContext = cloud.getWXContext();
   const userId = wxContext && wxContext.OPENID ? wxContext.OPENID : null;
 
@@ -33,7 +31,6 @@ exports.main = async (event, context) => {
       if (!userId) return { ok: false, error: 'unauthorized: OPENID required' };
       const invCol = db.collection('medicineInventory');
       const updateData = { updatedAt: new Date() };
-      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
       if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
       const existedInv = await invCol.where({ userId }).orderBy('updatedAt', 'desc').limit(1).get();
       if (existedInv && existedInv.data && existedInv.data.length > 0) {
@@ -54,7 +51,6 @@ exports.main = async (event, context) => {
     if (existed && existed.data && existed.data.length > 0) {
       const docId = existed.data[0]._id;
       const updateData = { taken: status === 1, status, time: targetTime };
-      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
       if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
       await collection.doc(docId).update({ data: updateData });
     } else {
@@ -65,16 +61,14 @@ exports.main = async (event, context) => {
         status,
         time: targetTime,
       };
-      if (typeof medicineTotal !== 'undefined') addData.medicineTotal = medicineTotal;
       if (typeof medicineRemaining !== 'undefined') addData.medicineRemaining = medicineRemaining;
       await collection.add({ data: addData });
     }
 
     // 同步更新库存（使用 OPENID 识别用户）
-    if (userId && (typeof medicineTotal !== 'undefined' || typeof medicineRemaining !== 'undefined')) {
+    if (userId && (typeof medicineRemaining !== 'undefined')) {
       const invCol = db.collection('medicineInventory');
       const updateData = { updatedAt: new Date() };
-      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
       if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
       const existedInv = await invCol.where({ userId }).orderBy('updatedAt', 'desc').limit(1).get();
       if (existedInv && existedInv.data && existedInv.data.length > 0) {

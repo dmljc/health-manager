@@ -24,7 +24,6 @@ exports.main = async (event, context) => {
         inventory = {
           _id: inv._id,
           userId: inv.userId,
-          medicineTotal: inv.medicineTotal,
           medicineRemaining: inv.medicineRemaining,
           updatedAt: inv.updatedAt,
         };
@@ -40,7 +39,6 @@ exports.main = async (event, context) => {
         inventory = {
           _id: addRes && addRes._id ? addRes._id : undefined,
           userId,
-          medicineTotal: 28,
           medicineRemaining: 0,
           updatedAt: initData.updatedAt,
         };
