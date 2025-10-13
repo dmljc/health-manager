@@ -3,13 +3,19 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
-// 输入: { status: 0 | 1, date?: 'YYYY-MM-DD', time?: 'HH:mm' }
-// 行为: 记录或更新当天/指定日期的服药状态，并返回最新记录
+// 输入: {
+//   status?: 0 | 1,
+//   date?: 'YYYY-MM-DD',
+//   time?: 'HH:mm',
+//   medicineTotal?: number,
+//   medicineRemaining?: number,
+//   userId?: string,
+//   action?: 'inventoryUpdate' | undefined
+// }
 exports.main = async (event, context) => {
-  const { status, date, time } = event || {};
-  if (typeof status !== 'number' || !(status === 0 || status === 1)) {
-    return { ok: false, error: 'Invalid status, expect 0 or 1' };
-  }
+  const { status, date, time, medicineTotal, medicineRemaining, action } = event || {};
+  const wxContext = cloud.getWXContext();
+  const userId = wxContext && wxContext.OPENID ? wxContext.OPENID : null;
 
   const now = new Date();
   const y = now.getFullYear();
@@ -22,28 +28,62 @@ exports.main = async (event, context) => {
   const targetTime = time || `${hh}:${mm}`;
 
   try {
-    const collection = db.collection('medicine');
-    // 尝试找到该日期的记录
-    const existed = await collection.where({ date: targetDate }).get();
-
-    if (existed && existed.data && existed.data.length > 0) {
-      const docId = existed.data[0]._id;
-      await collection.doc(docId).update({
-        data: { taken: status === 1, status, time: targetTime }
-      });
-    } else {
-      await collection.add({
-        data: {
-          id: `med_${Date.now()}`,
-          date: targetDate,
-          taken: status === 1,
-          status,
-          time: targetTime
-        }
-      });
+    // 仅更新库存，不改动日记录
+    if (action === 'inventoryUpdate') {
+      if (!userId) return { ok: false, error: 'unauthorized: OPENID required' };
+      const invCol = db.collection('medicineInventory');
+      const updateData = { updatedAt: new Date() };
+      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
+      if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
+      const existedInv = await invCol.where({ userId }).orderBy('updatedAt', 'desc').limit(1).get();
+      if (existedInv && existedInv.data && existedInv.data.length > 0) {
+        await invCol.doc(existedInv.data[0]._id).update({ data: updateData });
+      } else {
+        await invCol.add({ data: { userId, ...updateData } });
+      }
+      return { ok: true, inventoryUpdated: true };
     }
 
-    // 返回该日期最新记录以及总数
+    // 更新或新增当日服药记录
+    if (typeof status !== 'number' || !(status === 0 || status === 1)) {
+      return { ok: false, error: 'Invalid status, expect 0 or 1' };
+    }
+
+    const collection = db.collection('medicine');
+    const existed = await collection.where({ date: targetDate }).get();
+    if (existed && existed.data && existed.data.length > 0) {
+      const docId = existed.data[0]._id;
+      const updateData = { taken: status === 1, status, time: targetTime };
+      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
+      if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
+      await collection.doc(docId).update({ data: updateData });
+    } else {
+      const addData = {
+        id: `med_${Date.now()}`,
+        date: targetDate,
+        taken: status === 1,
+        status,
+        time: targetTime,
+      };
+      if (typeof medicineTotal !== 'undefined') addData.medicineTotal = medicineTotal;
+      if (typeof medicineRemaining !== 'undefined') addData.medicineRemaining = medicineRemaining;
+      await collection.add({ data: addData });
+    }
+
+    // 同步更新库存（使用 OPENID 识别用户）
+    if (userId && (typeof medicineTotal !== 'undefined' || typeof medicineRemaining !== 'undefined')) {
+      const invCol = db.collection('medicineInventory');
+      const updateData = { updatedAt: new Date() };
+      if (typeof medicineTotal !== 'undefined') updateData.medicineTotal = medicineTotal;
+      if (typeof medicineRemaining !== 'undefined') updateData.medicineRemaining = medicineRemaining;
+      const existedInv = await invCol.where({ userId }).orderBy('updatedAt', 'desc').limit(1).get();
+      if (existedInv && existedInv.data && existedInv.data.length > 0) {
+        await invCol.doc(existedInv.data[0]._id).update({ data: updateData });
+      } else {
+        await invCol.add({ data: { userId, ...updateData } });
+      }
+    }
+
     const latest = await collection.where({ date: targetDate }).get();
     const countRes = await collection.count();
 

@@ -12,7 +12,7 @@ Page({
     datePickerRefreshKey: 0,
     selectedDate: "",
     medicineTotal: 28,
-    medicineRemaining: 4,
+    medicineRemaining: 0,
     medicineColorClass: "normal",
     showModal: false,
     modalTotalInput: "",
@@ -24,14 +24,9 @@ Page({
     medicineDetail: null,
   },
 
-  getUserId() {
-    // 假设从全局数据中获取用户 ID
-    const app = getApp();
-    return app.globalData.userId || "defaultUserId";
-  },
+  // 移除用户 ID 获取逻辑；云函数使用 OPENID 识别用户
 
   async fetchMedicineData() {
-    const userId = this.getUserId();
     try {
       if (!wx.cloud || !wx.cloud._inited) {
         wx.cloud.init({
@@ -46,21 +41,34 @@ Page({
       });
 
       const list = res.result && res.result.list ? res.result.list : [];
+      const inventory = res.result && res.result.inventory ? res.result.inventory : null;
       const todayRecord = list.find((record) => record.date === this.data.todayDate);
 
       if (todayRecord) {
         const takenByStatus = typeof todayRecord.status !== "undefined" ? Number(todayRecord.status) === 1 : !!todayRecord.taken;
+        const fixedTotal = 28;
+        const invRemaining = inventory && typeof inventory.medicineRemaining !== 'undefined' ? Number(inventory.medicineRemaining) : this.data.medicineRemaining;
+        const nextColor = this.computeRemainingColorClass(fixedTotal, invRemaining);
         this.setData({
           queryId: todayRecord._id || todayRecord.id || "",
           hasTakenToday: takenByStatus,
           medicineRecord: todayRecord,
+          medicineTotal: fixedTotal,
+          medicineRemaining: invRemaining,
+          medicineColorClass: nextColor,
         });
       } else {
         console.warn("未找到当天记录，请检查数据或日期格式。");
+        const fixedTotal = 28;
+        const invRemaining = inventory && typeof inventory.medicineRemaining !== 'undefined' ? Number(inventory.medicineRemaining) : this.data.medicineRemaining;
+        const nextColor = this.computeRemainingColorClass(fixedTotal, invRemaining);
         this.setData({
           queryId: "",
           hasTakenToday: false,
           medicineRecord: null,
+          medicineTotal: fixedTotal,
+          medicineRemaining: invRemaining,
+          medicineColorClass: nextColor,
         });
       }
 
@@ -167,12 +175,27 @@ Page({
         });
       }
 
+      // 计算新的药物余量（点击服药则-1，撤销则+1），并限制范围
+      const currentRemaining = Number(this.data.medicineRemaining || 0);
+      const total = Number(this.data.medicineTotal || 0);
+      let nextRemaining = currentRemaining;
+      if (medicineStatus === 1 && !this.data.hasTakenToday) {
+        nextRemaining = Math.max(0, currentRemaining - 1);
+      } else if (medicineStatus === 0 && this.data.hasTakenToday) {
+        nextRemaining = Math.min(total > 0 ? total : Number.MAX_SAFE_INTEGER, currentRemaining + 1);
+      }
+      const nextColor = this.computeRemainingColorClass(total, nextRemaining);
+
+      // 不再在点击后立即更新余量；改为在列表刷新后更新 UI
+
       const res = await wx.cloud.callFunction({
         name: "medicineStatus",
         data: {
           status: medicineStatus,
           date: this.data.todayDate,
           time: getCurrentTimeHHmm(),
+          medicineTotal: total,
+          medicineRemaining: nextRemaining,
         },
       });
 
@@ -181,6 +204,8 @@ Page({
         throw new Error(res.result && res.result.error || "update failed");
       }
 
+      // 库存同步由 medicineStatus 内部处理，无需单独调用 medicineInventory
+
       // 更新成功后拉取最新列表以刷新本地缓存与 UI
       const resList = await wx.cloud.callFunction({
         name: "medicineList",
@@ -188,6 +213,7 @@ Page({
       });
 
       const list = resList.result && resList.result.list ? resList.result.list : [];
+      const inventory = resList.result && resList.result.inventory ? resList.result.inventory : null;
       const todayRecord = list.find((record) => record.date === this.data.todayDate);
       const takenByStatus = todayRecord
         ? (typeof todayRecord.status !== "undefined" ? Number(todayRecord.status) === 1 : !!todayRecord.taken)
@@ -200,11 +226,19 @@ Page({
         console.warn("写入本地缓存失败 med_records:", e);
       }
 
+      const fixedTotal = 28;
+      const invRemaining = (inventory && typeof inventory.medicineRemaining !== 'undefined')
+        ? Number(inventory.medicineRemaining)
+        : Number(this.data.medicineRemaining || 0);
+      const invColor = this.computeRemainingColorClass(fixedTotal, invRemaining);
       this.setData({
         hasTakenToday: takenByStatus,
         medicineRecord: todayRecord || null,
         medicineList: list,
         datePickerRefreshKey: this.data.datePickerRefreshKey + 1,
+        medicineTotal: fixedTotal,
+        medicineRemaining: invRemaining,
+        medicineColorClass: invColor,
       });
     } catch (err) {
       console.error("云函数调用失败:", err);
@@ -284,26 +318,79 @@ Page({
   },
 
   // 确认更新总量
-  confirmTotalChange() {
+  async confirmTotalChange() {
     const v = String(this.data.modalTotalInput || '').trim();
-    const nextTotal = Number(v);
-    if (!Number.isFinite(nextTotal) || nextTotal <= 0) {
-      wx.showToast({ title: '请输入有效的总量', icon: 'none' });
+    const inputNumber = Number(v);
+    if (!Number.isFinite(inputNumber) || inputNumber <= 0) {
+      wx.showToast({ title: '请输入有效的数量', icon: 'none' });
       return;
     }
 
-    // 更新总量并刷新颜色标识
-    const nextColor = this.computeRemainingColorClass(nextTotal, this.data.medicineRemaining);
+    // 固定总量为 28，弹框设置值用作余量
+    const fixedTotal = 28;
+    const nextRemaining = inputNumber;
+    // 先关闭弹框，不立即更新 UI 的余量；等待列表刷新后统一更新
     this.setData({
-      medicineTotal: nextTotal,
-      medicineColorClass: nextColor,
       showModal: false,
       modalInputFocus: false,
       modalTotalInput: '',
     });
 
-    // 可选：持久化到本地，后续可接入云函数
-    try { wx.setStorageSync('medicine_total', nextTotal); } catch (_) {}
+    // 持久化到本地（保持与现有逻辑一致）
+    try { wx.setStorageSync('medicine_total', fixedTotal); } catch (_) {}
+
+    // 调用云函数保存到库存
+    try {
+      if (!wx.cloud || !wx.cloud._inited) {
+        wx.cloud.init({
+          env: "cloud1-3grp4xen3b5be11c",
+          traceUser: true,
+        });
+      }
+
+      const res = await wx.cloud.callFunction({
+        name: "medicineStatus",
+        data: {
+          action: 'inventoryUpdate',
+          medicineTotal: fixedTotal,
+          medicineRemaining: nextRemaining,
+        }
+      });
+
+      if (res.result && res.result.ok) {
+        console.log("库存已保存: total=28, remaining=", nextRemaining);
+      } else {
+        console.error("库存保存失败:", res.result && res.result.error);
+        wx.showToast({ title: '保存失败', icon: 'none' });
+      }
+    } catch (err) {
+      console.error("调用库存云函数失败:", err);
+      wx.showToast({ title: '网络错误', icon: 'none' });
+    }
+
+    // 保存后刷新列表并合并库存
+    try {
+      const resList = await wx.cloud.callFunction({
+        name: "medicineList",
+        data: {},
+      });
+      const list = resList.result && resList.result.list ? resList.result.list : [];
+      const inventory = resList.result && resList.result.inventory ? resList.result.inventory : null;
+      try { wx.setStorageSync('med_records', list); } catch (_) {}
+      const invRemaining = (inventory && typeof inventory.medicineRemaining !== 'undefined')
+        ? Number(inventory.medicineRemaining)
+        : Number(this.data.medicineRemaining || 0);
+      const invColor = this.computeRemainingColorClass(28, invRemaining);
+      this.setData({
+        medicineList: list,
+        datePickerRefreshKey: this.data.datePickerRefreshKey + 1,
+        medicineTotal: 28,
+        medicineRemaining: invRemaining,
+        medicineColorClass: invColor,
+      });
+    } catch (e) {
+      console.warn('刷新列表失败（不影响库存保存）:', e);
+    }
   },
 
   onLoad(options) {
