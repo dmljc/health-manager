@@ -61,4 +61,8 @@
       </block>
     </view>
   </view>
+  <!-- 右下角悬浮新增按钮 -->
+  <view class="floating-action-btn" bindtap="openIndicatorForm">
+    <text class="floating-action-icon">＋</text>
+  </view>
 </view>

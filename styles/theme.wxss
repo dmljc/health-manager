@@ -1,42 +1,56 @@
-/* 主题变量（精简版，仅保留变量定义） */
+/* 主题变量（无 BOM，统一命名） */
 :root {
-    --color-bg: #F7F8FA;
-    --color-bg-secondary: #FFFFFF;
-    --color-text: #1F2937;
-    --color-text-secondary: #6B7280;
-    --color-primary: #2563EB;
-    --color-primary-light: #EFF6FF;
-    --color-success: #10B981;
-    --color-success-light: #ECFDF5;
-    --color-warning: #F59E0B;
-    --color-warning-light: #FFFBEB;
-    --color-danger: #EF4444;
-    --color-danger-light: #FEF2F2;
-    --color-border: #E5E7EB;
-    --color-divider: #F3F4F6;
-    --radius-sm: 8rpx;
-    --radius-md: 12rpx;
-    --radius-lg: 16rpx;
-    --radius-xl: 24rpx;
-    --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
+  /* 背景与文本 */
+  --bg-color: #F7F8FA;
+  --bg-secondary: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+
+  /* 品牌色 */
+  --primary-color: #2563EB;
+  --primary-dark: #1E3A8A;
+
+  /* 状态色 */
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+
+  /* 边框与分割线 */
+  --border-color: #E5E7EB;
+  --divider-color: #F3F4F6;
+
+  /* 圆角 */
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+
+  /* 阴影 */
+  --shadow-xs: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 24rpx 64rpx rgba(0, 0, 0, 0.16);
 }
 
 /* 暗色主题变量 */
 .theme-dark {
-    --color-bg: #111827;
-    --color-bg-secondary: #1F2937;
-    --color-text: #F9FAFB;
-    --color-text-secondary: #9CA3AF;
-    --color-primary: #3B82F6;
-    --color-primary-light: #1E3A8A;
-    --color-success: #10B981;
-    --color-success-light: #064E3B;
-    --color-warning: #F59E0B;
-    --color-warning-light: #78350F;
-    --color-danger: #EF4444;
-    --color-danger-light: #7F1D1D;
-    --color-border: #374151;
-    --color-divider: #374151;
+  --bg-color: #111827;
+  --bg-secondary: #1F2937;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+
+  --primary-color: #3B82F6;
+  --primary-dark: #1E3A8A;
+
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+
+  --border-color: #374151;
+  --divider-color: #374151;
+
+  --shadow-xs: 0 2rpx 8rpx rgba(0, 0, 0, 0.20);
+  --shadow-sm: 0 8rpx 24rpx rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 16rpx 48rpx rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 24rpx 64rpx rgba(0, 0, 0, 0.28);
 }

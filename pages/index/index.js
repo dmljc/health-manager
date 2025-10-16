@@ -183,5 +183,13 @@ Page({
       if (Number.isFinite(n)) return n;
     }
     return NaN;
+  },
+
+  // 打开指标新增/修改页面
+  openIndicatorForm() {
+    try {
+      vibrateLight && vibrateLight({ type: 'light', silent: true });
+    } catch (_) {}
+    wx.navigateTo({ url: '/pages/indicator-form/index' });
   }
 });
