@@ -10,21 +10,16 @@ Page({
     ],
     index: 0,
     date: '',
-    time: '',
   },
 
-  // 获取当前日期时间
+  // 获取当前日期
   getCurrentDateTime() {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    
     return {
-      date: `${year}-${month}-${day}`,
-      time: `${hour}:${minute}`
+      date: `${year}-${month}-${day}`
     };
   },
 
@@ -52,22 +47,6 @@ Page({
     }
   },
 
-  bindTimeChange(e) {
-    console.log('Time changed:', e);
-    const t = e && e.detail ? e.detail.value : this.data.time;
-    console.log('New time:', t);
-    
-    // 验证时间格式
-    if (this.isValidTime(t)) {
-      this.setData({ time: t });
-    } else {
-      console.error('Invalid time format:', t);
-      wx.showToast({
-        title: '时间格式错误',
-        icon: 'none'
-      });
-    }
-  },
 
   // 验证日期格式 (YYYY-MM-DD)
   isValidDate(dateString) {
@@ -79,16 +58,10 @@ Page({
     return date instanceof Date && !isNaN(date) && dateString === date.toISOString().split('T')[0];
   },
 
-  // 验证时间格式 (HH:MM)
-  isValidTime(timeString) {
-    if (!timeString) return false;
-    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    return regex.test(timeString);
-  },
 
   // 保存检测记录
   onSave() {
-    const { array, index, date, time } = this.data;
+    const { array, index, date } = this.data;
     
     // 验证数据完整性
     if (!array[index]) {
@@ -107,21 +80,11 @@ Page({
       return;
     }
     
-    if (!time) {
-      wx.showToast({
-        title: '请选择检测时间',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    // 构建保存数据
+    // 构建保存数据（仅日期）
     const recordData = {
       type: array[index],
       date: date,
-      time: time,
-      datetime: `${date} ${time}`,
-      timestamp: new Date(`${date} ${time}`).getTime(),
+      timestamp: new Date(date).getTime(),
       createTime: new Date().toISOString()
     };
     
@@ -161,13 +124,12 @@ Page({
   onLoad() {
     console.log('Page loaded with data:', this.data);
     
-    // 设置当前日期时间为默认值
+    // 设置当前日期为默认值
     const currentDateTime = this.getCurrentDateTime();
     this.setData({
-      date: currentDateTime.date,
-      time: currentDateTime.time
+      date: currentDateTime.date
     });
     
-    console.log('Initialized with current date time:', currentDateTime);
+    console.log('Initialized with current date:', currentDateTime);
   }
 });

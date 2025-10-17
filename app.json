@@ -2,7 +2,7 @@
     "lazyCodeLoading": "requiredComponents",
     "pages": [
         "pages/index/index",
-        "pages/indicator-form/index",
+        "pages/index-form/index",
         "pages/medicine/index",
         "pages/statistics/index"
     ],

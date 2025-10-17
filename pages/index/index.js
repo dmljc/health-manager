@@ -190,6 +190,6 @@ Page({
     try {
       vibrateLight && vibrateLight({ type: 'light', silent: true });
     } catch (_) {}
-    wx.navigateTo({ url: '/pages/indicator-form/index' });
+    wx.navigateTo({ url: '/pages/index-form/index' });
   }
 });
