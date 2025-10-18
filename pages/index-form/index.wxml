@@ -1,32 +1,31 @@
 <view class="page">
     <view class="container">
         <!-- 顶部标题区域 -->
-        <view class="header">
-            <view class="title">新增检测记录</view>
-            <!-- <view class="subtitle">记录您的健康数据</view> -->
-        </view>
+        <view class="title">新增检查记录</view>
         <!-- 主要表单卡片 -->
         <view class="card">
             <view class="field">
-        <view class="label">检查类型</view>
-        <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
-          <view class="picker-display">{{array[index]}}</view>
-        </picker>
-        <view class="error-space" style="visibility: hidden;"></view>
-      </view>
+                <view class="label">检查类型</view>
+                <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+                    <view class="picker-display">{{array[index]}}</view>
+                </picker>
+                <view class="error-space" style="visibility: hidden;"></view>
+            </view>
             <!-- 检测数值输入 -->
             <view class="field">
                 <view class="label">检测数值</view>
-                <input class="value" type="{{inputType}}" placeholder="{{placeholder}}" value="{{value}}" bindinput="onValueInput" maxlength="20" confirm-type="done"/>
-        <view class="error-space" style="visibility: {{valueError ? 'visible' : 'hidden'}};">{{valueError}}</view>
+                <input class="value" type="{{inputType}}" placeholder="{{placeholder}}" value="{{value}}" bindinput="onValueInput" maxlength="20" confirm-type="done" />
+                <view class="error-space" style="visibility: {{valueError ? 'visible' : 'hidden'}};">
+                    {{valueError}}
+                </view>
             </view>
             <view class="field">
-        <view class="label">检测日期</view>
-        <picker mode="date" value="{{date}}" bindchange="bindDateChange">
-          <view class="picker-display">{{date}}</view>
-        </picker>
-        <view class="error-space" style="visibility: hidden;"></view>
-      </view>
+                <view class="label">检测日期</view>
+                <picker mode="date" value="{{date}}" bindchange="bindDateChange">
+                    <view class="picker-display">{{date}}</view>
+                </picker>
+                <view class="error-space" style="visibility: hidden;"></view>
+            </view>
         </view>
         <!-- 底部保存按钮 -->
         <view class="save-section">
@@ -42,7 +41,6 @@
                 <view class="info-text">定期记录健康数据有助于更好地了解身体状况</view>
             </view>
         </view>
-        <!-- 最近记录预览 -->
         <!-- 底部安全区域 -->
         <view class="safe-area"></view>
     </view>

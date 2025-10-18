@@ -4,6 +4,7 @@
     min-height: 100vh;
     background: var(--bg-color);
     padding-bottom: 40rpx;
+    margin: 24rpx 32rpx;
 }
 
 /* 问候语区域 */
@@ -27,7 +28,6 @@
 
 /* 健康评分卡片 */
 .health-score-card {
-    margin: 24rpx 32rpx;
     border-radius: 16rpx;
     overflow: hidden;
     box-shadow: var(--shadow-md);
@@ -37,7 +37,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 32rpx;
+    padding-bottom: 32rpx;
     border-bottom: 1rpx solid var(--border-color);
 }
 
@@ -54,7 +54,7 @@
 }
 
 .score-chart {
-    padding: 16rpx;
+    /* padding: 16rpx; */
 }
 
 /* 指标摘要 */

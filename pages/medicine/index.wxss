@@ -4,7 +4,7 @@
 .medicine-page {
     min-height: 100vh;
     background: var(--color-bg);
-    padding: 48rpx 24rpx calc(80rpx + env(safe-area-inset-bottom));
+    padding: 24rpx 32rpx calc(80rpx + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     position: relative;

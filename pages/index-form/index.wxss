@@ -6,25 +6,15 @@
 }
 
 .container {
-    padding: 40rpx 36rpx;
-}
-
-.header {
-    margin-bottom: 32rpx;
-    text-align: center;
+    padding: 0rpx 32rpx;
 }
 
 .title {
     font-size: 36rpx;
     font-weight: 700;
     color: #1F2937;
-    margin-bottom: 8rpx;
-}
-
-.subtitle {
-    font-size: 24rpx;
-    color: #64748B;
-    font-weight: 400;
+    text-align: center;
+    margin-bottom: 32rpx;
 }
 
 .card {
@@ -57,8 +47,6 @@
     background: #FAFAFB;
 }
 
-
-
 .datetime-display {
     padding: 16rpx 20rpx;
     background: #e8f4fd;
@@ -72,7 +60,6 @@
 /* 优雅的保存按钮样式 */
 .save-section {
     margin-top: 40rpx;
-    /* padding-bottom: 40rpx; */
 }
 
 .save-btn {
@@ -94,7 +81,6 @@
     justify-content: center;
     /* 移除图标后不需要元素间距 */
     gap: 0;
-    /* padding: 24rpx 32rpx; */
     border-radius: 20rpx;
 }
 
@@ -107,7 +93,6 @@
     filter: brightness(0.96);
 }
 
-
 .save-text {
     color: #1F2937;
     font-size: 32rpx;
@@ -119,14 +104,13 @@
     background: #FFFFFF;
 }
 
-
-
 .error-space {
-  margin-top: 8rpx;
-  min-height: 28rpx;
-  line-height: 28rpx;
-  font-size: 22rpx;
-  color: #DC2626; /* 红色错误提示 */
+    margin-top: 8rpx;
+    min-height: 28rpx;
+    line-height: 28rpx;
+    font-size: 22rpx;
+    color: #DC2626;
+    /* 红色错误提示 */
 }
 
 .picker-display:active {
@@ -169,7 +153,6 @@
     color: #64748B;
     line-height: 1.5;
 }
-
 
 /* 保存按钮区域优化 */
 .save-section {
