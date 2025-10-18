@@ -109,52 +109,64 @@ Page({
         return /^-?\d+(\.\d+)?[eE][-+]?\d+$/.test(String(val));
     },
 
-    onSave() {
-        const { array, index, date, value } = this.data;
+    async onSave() {
+    const { array, index, date, value } = this.data;
 
-        // 其它字段的完整性校验（保留原有 toast 提示）
-        if (!array[index]) {
-            wx.showToast({ title: '请选择检查类型', icon: 'none' });
-            return;
-        }
-        if (!date) {
-            wx.showToast({ title: '请选择检测日期', icon: 'none' });
-            return;
-        }
+    // 其它字段的完整性校验（保留原有 toast 提示）
+    if (!array[index]) {
+      wx.showToast({ title: '请选择检查类型', icon: 'none' });
+      return;
+    }
+    if (!date) {
+      wx.showToast({ title: '请选择检测日期', icon: 'none' });
+      return;
+    }
 
-        // 触发必填与格式校验：仅在输入框下方显示红色文案，不使用 toast
-        const ok = this.validateCurrentValue();
-        if (!ok) return;
+    // 触发必填与格式校验：仅在输入框下方显示红色文案，不使用 toast
+    const ok = this.validateCurrentValue();
+    if (!ok) return;
 
-        const currentType = array[index];
-        const isDNA = currentType === 'HBV-DNA定量';
-        const trimmed = String(value).trim();
-        const finalValue = isDNA ? String(trimmed) : Number(trimmed);
+    const currentType = array[index];
+    const isDNA = currentType === 'HBV-DNA定量';
+    const trimmed = String(value).trim();
+    const finalValue = isDNA ? String(trimmed) : Number(trimmed);
 
-        // 构建保存数据
-        const recordData = {
-            type: currentType,
-            value: finalValue,
-            date: date,
-            timestamp: new Date(date).getTime(),
-            valueType: isDNA ? 'string' : 'number',
-            createTime: new Date().toISOString()
-        };
+    // 构建保存数据
+    const recordData = {
+      type: currentType,
+      value: finalValue,
+      date: date,
+      timestamp: new Date(date).getTime(),
+      valueType: isDNA ? 'string' : 'number',
+      createTime: new Date().toISOString()
+    };
 
-        // 这里可以调用云函数或本地存储
-        try {
-            // 示例：保存到本地存储
-            const existingRecords = wx.getStorageSync('health_records') || [];
-            existingRecords.push(recordData);
-            wx.setStorageSync('health_records', existingRecords);
+    // 调用云函数保存记录
+    try {
+      if (!wx.cloud || !wx.cloud._inited) {
+        wx.cloud.init({
+          env: wx.cloud.DYNAMIC_CURRENT_ENV,
+          traceUser: true,
+        });
+      }
 
-            // 显示成功提示
-            wx.showToast({ title: '保存成功', icon: 'success', duration: 2000 });
-        } catch (error) {
-            console.error('Save failed:', error);
-            wx.showToast({ title: '保存失败', icon: 'error' });
-        }
-    },
+      const res = await wx.cloud.callFunction({
+        name: 'examination',
+        data: recordData,
+      });
+
+      if (res && res.result && res.result.success) {
+        wx.showToast({ title: '保存成功', icon: 'success', duration: 2000 });
+        setTimeout(() => { wx.navigateBack({ delta: 1 }); }, 2000);
+      } else {
+        const errMsg = (res && res.result && res.result.error) ? res.result.error : '保存失败';
+        wx.showToast({ title: errMsg, icon: 'none' });
+      }
+    } catch (error) {
+      console.error('Save failed:', error);
+      wx.showToast({ title: '保存失败', icon: 'none' });
+    }
+  },
 
     // 页面加载时初始化
     onLoad() {

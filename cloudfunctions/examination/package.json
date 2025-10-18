@@ -1,0 +1,9 @@
+{
+  "name": "examination",
+  "version": "1.0.0",
+  "description": "云函数：提交检查记录到 examination 集合，支持重复更新",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "3.0.1"
+  }
+}
