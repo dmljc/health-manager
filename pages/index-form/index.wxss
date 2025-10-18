@@ -1,223 +1,183 @@
 @import "../../styles/theme.wxss";
 
 .page {
-  min-height: 100vh;
-  background: #F7F8FA;
+    min-height: 100vh;
+    background: #F7F8FA;
 }
 
 .container {
-  padding: 40rpx 36rpx;
+    padding: 40rpx 36rpx;
 }
 
-.header { 
-  margin-bottom: 32rpx; 
-  text-align: center;
+.header {
+    margin-bottom: 32rpx;
+    text-align: center;
 }
+
 .title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1F2937;
-  margin-bottom: 8rpx;
+    font-size: 36rpx;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 8rpx;
 }
+
 .subtitle {
-  font-size: 24rpx;
-  color: #64748B;
-  font-weight: 400;
+    font-size: 24rpx;
+    color: #64748B;
+    font-weight: 400;
 }
 
 .card {
-  background: #FFFFFF;
-  border-radius: 24rpx;
-  box-shadow: 0 6rpx 24rpx rgba(0,0,0,0.06);
-  padding: 28rpx;
-  margin-bottom: 24rpx;
+    background: #FFFFFF;
+    border-radius: 24rpx;
+    box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.06);
+    padding: 28rpx;
+    margin-bottom: 24rpx;
 }
 
-.field { margin-bottom: 22rpx; }
+.field {
+    /* 按要求移除底部外边距，依赖内部占位控制间距 */
+    margin-bottom: 0;
+}
+
 .label {
-  font-size: 26rpx;
-  color: #64748B;
-  margin-bottom: 10rpx;
+    font-size: 26rpx;
+    color: #64748B;
+    margin-bottom: 10rpx;
 }
 
 .picker-display,
 .value {
-  width: 92%;
-  border: 1rpx solid #E5E7EB;
-  border-radius: 16rpx;
-  padding: 22rpx 24rpx;
-  font-size: 28rpx;
-  color: #111827;
-  background: #FAFAFB;
+    width: 92%;
+    border: 1rpx solid #E5E7EB;
+    border-radius: 16rpx;
+    padding: 22rpx 24rpx;
+    font-size: 28rpx;
+    color: #111827;
+    background: #FAFAFB;
 }
 
 
 
 .datetime-display {
-  padding: 16rpx 20rpx;
-  background: #e8f4fd;
-  border-radius: 8rpx;
-  color: #1976d2;
-  font-size: 28rpx;
-  font-weight: 500;
-  border: 1rpx solid #bbdefb;
+    padding: 16rpx 20rpx;
+    background: #e8f4fd;
+    border-radius: 8rpx;
+    color: #1976d2;
+    font-size: 28rpx;
+    font-weight: 500;
+    border: 1rpx solid #bbdefb;
 }
 
 /* 优雅的保存按钮样式 */
 .save-section {
-  margin-top: 40rpx;
-  /* padding-bottom: 40rpx; */
+    margin-top: 40rpx;
+    /* padding-bottom: 40rpx; */
 }
 
 .save-btn {
-  width: 100%;
-  /* 从左到右的渐变：主题蓝色到白色 */
-  background: linear-gradient(0deg, #0A7AFF 0%, #FFFFFF 100%);
-  border: 1rpx solid #F0F0F0;
-  border-radius: var(--radius-xl);
-  padding: 0;
-  margin: 0;
-  /* 柔和扩散阴影 */
-  box-shadow:
-    0 6px 16px rgba(37, 99, 235, 0.08),
-    0 16px 32px rgba(37, 99, 235, 0.06),
-    0 36px 72px rgba(37, 99, 235, 0.05);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* 移除图标后不需要元素间距 */
-  gap: 0;
-  /* padding: 24rpx 32rpx; */
-  border-radius: 20rpx;
+    width: 100%;
+    /* 从左到右的渐变：主题蓝色到白色 */
+    background: linear-gradient(0deg, #0A7AFF 0%, #FFFFFF 100%);
+    border: 1rpx solid #F0F0F0;
+    border-radius: var(--radius-xl);
+    padding: 0;
+    margin: 0;
+    /* 柔和扩散阴影 */
+    box-shadow:
+        0 6px 16px rgba(37, 99, 235, 0.08),
+        0 16px 32px rgba(37, 99, 235, 0.06),
+        0 36px 72px rgba(37, 99, 235, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 移除图标后不需要元素间距 */
+    gap: 0;
+    /* padding: 24rpx 32rpx; */
+    border-radius: 20rpx;
 }
 
 .save-btn::after {
-  border: none;
+    border: none;
 }
 
 .save-btn-hover {
-  transform: translateY(1px) scale(0.98);
-  filter: brightness(0.96);
+    transform: translateY(1px) scale(0.98);
+    filter: brightness(0.96);
 }
 
 
 .save-text {
-  color: #1F2937;
-  font-size: 32rpx;
-  font-weight: 600;
-  letter-spacing: 1rpx;
+    color: #1F2937;
+    font-size: 32rpx;
+    font-weight: 600;
+    letter-spacing: 1rpx;
 }
 
-.value { background: #FFFFFF; }
+.value {
+    background: #FFFFFF;
+}
 
 
+
+.error-space {
+  margin-top: 8rpx;
+  min-height: 28rpx;
+  line-height: 28rpx;
+  font-size: 22rpx;
+  color: #DC2626; /* 红色错误提示 */
+}
 
 .picker-display:active {
-  background: var(--divider-color);
-  border-color: var(--primary-color);
-  transform: scale(0.995);
+    background: var(--divider-color);
+    border-color: var(--primary-color);
+    transform: scale(0.995);
 }
 
 /* 提示信息卡片 */
 .info-card {
-  background: linear-gradient(135deg, #EEF2FF 0%, #F0F9FF 100%);
-  border-radius: 20rpx;
-  padding: 24rpx;
-  margin-bottom: 24rpx;
-  border: 1rpx solid #E0E7FF;
-  display: flex;
-  align-items: flex-start;
-  gap: 16rpx;
+    background: linear-gradient(135deg, #EEF2FF 0%, #F0F9FF 100%);
+    border-radius: 20rpx;
+    padding: 24rpx;
+    margin-bottom: 24rpx;
+    border: 1rpx solid #E0E7FF;
+    display: flex;
+    align-items: flex-start;
+    gap: 16rpx;
 }
 
 .info-icon {
-  font-size: 32rpx;
-  line-height: 1;
-  margin-top: 4rpx;
+    font-size: 32rpx;
+    line-height: 1;
+    margin-top: 4rpx;
 }
 
 .info-content {
-  flex: 1;
+    flex: 1;
 }
 
 .info-title {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #3730A3;
-  margin-bottom: 6rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    color: #3730A3;
+    margin-bottom: 6rpx;
 }
 
 .info-text {
-  font-size: 24rpx;
-  color: #64748B;
-  line-height: 1.5;
+    font-size: 24rpx;
+    color: #64748B;
+    line-height: 1.5;
 }
 
-/* 最近记录卡片 */
-.recent-card {
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
-  padding: 24rpx;
-  margin-bottom: 32rpx;
-  border: 1rpx solid #F1F5F9;
-}
-
-.recent-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 1rpx solid #F1F5F9;
-}
-
-.recent-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #1F2937;
-}
-
-.recent-count {
-  font-size: 22rpx;
-  color: #64748B;
-  background: #F8FAFC;
-  padding: 6rpx 12rpx;
-  border-radius: 12rpx;
-}
-
-.recent-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #F8FAFC;
-}
-
-.recent-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.recent-type {
-  font-size: 26rpx;
-  color: #374151;
-  font-weight: 500;
-}
-
-.recent-date {
-  font-size: 24rpx;
-  color: #9CA3AF;
-}
 
 /* 保存按钮区域优化 */
 .save-section {
-  margin-top: 16rpx;
-  margin-bottom: 24rpx;
+    margin-top: 16rpx;
+    margin-bottom: 24rpx;
 }
 
 /* 底部安全区域 */
 .safe-area {
-  height: 40rpx;
+    height: 40rpx;
 }
