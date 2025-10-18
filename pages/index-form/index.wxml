@@ -6,8 +6,8 @@
         <view class="card">
             <view class="field">
                 <view class="label">检查类型</view>
-                <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
-                    <view class="picker-display">{{array[index]}}</view>
+                <picker bindchange="bindPickerChange" value="{{index}}" range="{{checkTypes}}" range-key="label">
+                    <view class="picker-display">{{checkTypes[index].label}}</view>
                 </picker>
                 <view class="error-space" style="visibility: hidden;"></view>
             </view>

@@ -62,11 +62,28 @@ Component({
                 ctx.scale(pixelRatio, pixelRatio);
                 this.setData({ _canvasNode: node, _ctx2d: ctx }, () => this.renderChart());
               } else {
-                // 回退：仍然渲染（图表库会使用旧接口）
-                this.renderChart();
+                // 重试一次获取 Canvas 2D 节点，避免无 ctx 渲染导致警告
+                setTimeout(() => {
+                  try {
+                    wx.createSelectorQuery()
+                      .in(this)
+                      .select(`#${this.data.canvasId}`)
+                      .node()
+                      .exec((res2) => {
+                        const node2 = res2 && res2[0] && res2[0].node;
+                        if (node2) {
+                          const ctx2 = node2.getContext('2d');
+                          node2.width = cWidth * pixelRatio;
+                          node2.height = cHeight * pixelRatio;
+                          ctx2.scale(pixelRatio, pixelRatio);
+                          this.setData({ _canvasNode: node2, _ctx2d: ctx2 }, () => this.renderChart());
+                        }
+                      });
+                  } catch(_) {}
+                }, 60);
               }
             } catch (_) {
-              this.renderChart();
+              // 不调用 renderChart，等待下次 attached 或 observers 触发后重新尝试
             }
           });
       });
@@ -99,6 +116,8 @@ Component({
     renderChart() {
       const { categories, series, cWidth, cHeight, pixelRatio, itemCount, enableScroll, canvasId, minimal, scientific, yMax, guideLines, safeRegion, backgroundRegions, yAxisTicks, yAxisMin, yAxisMax, showBackground, _ctx2d, _canvasNode } = this.data;
       if (!categories || !series || !cWidth || !cHeight) return;
+      // 若仍未拿到 Canvas 2D 上下文，暂不渲染以避免警告
+      if (!_ctx2d) return;
       // 自动设置 itemCount 为分类总数，实现全量显示
       const finalItemCount = (itemCount == null || itemCount <= 0) ? categories.length : itemCount;
       const useScientific = !!scientific;

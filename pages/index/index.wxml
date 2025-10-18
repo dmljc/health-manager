@@ -4,6 +4,7 @@
       <text class="score-title">{{item.title}}</text>
     </view>
     <view class="score-chart">
+      <!-- HBV-DNA 定量：科学记数法 -->
       <block wx:if="{{item.title === 'HBV-DNA定量'}}">
         <line-chart 
           categories="{{item.categories}}" 
@@ -13,51 +14,48 @@
         >
         </line-chart>
       </block>
+      <!-- 甘油三酯：限制 y 轴最大值 + 自定义刻度 -->
+      <block wx:elif="{{item.title === '甘油三酯'}}">
+        <line-chart 
+          categories="{{item.categories}}" 
+          series="{{item.series}}"
+          minimal="{{true}}"
+          scientific="{{false}}"
+          show-background="{{item.showBackground}}"
+          safe-region="{{item.safeRegion}}"
+          background-regions="{{item.backgroundRegions}}"
+          guide-lines="{{item.guideLines}}"
+          y-axis-ticks="{{item.yAxisTicks}}"
+          y-axis-max="{{item.yAxisMax}}"
+          y-axis-min="{{item.yAxisMin}}"
+        >
+        </line-chart>
+      </block>
+      <!-- 尿酸：安全区背景与参考线 -->
+      <block wx:elif="{{item.title === '尿酸'}}">
+        <line-chart 
+          categories="{{item.categories}}" 
+          series="{{item.series}}"
+          minimal="{{true}}"
+          scientific="{{false}}"
+          show-background="{{item.showBackground}}"
+          safe-region="{{item.safeRegion}}"
+          background-regions="{{item.backgroundRegions}}"
+          guide-lines="{{item.guideLines}}"
+          y-axis-ticks="{{item.yAxisTicks}}"
+          y-axis-min="{{item.yAxisMin}}"
+        >
+        </line-chart>
+      </block>
+      <!-- 其他指标（如 ALT）：通用折线图 -->
       <block wx:else>
-        <!-- 若为甘油三酯且需要限制最大值，则传入 y-axis-max；否则不传，避免被解析为 0 -->
-        <block wx:if="{{item.yAxisMax !== null && item.yAxisMax !== undefined}}">
-          <line-chart 
-            categories="{{item.categories}}" 
-            series="{{item.series}}"
-            minimal="{{true}}"
-            scientific="{{false}}"
-            show-background="{{item.showBackground}}"
-            safe-region="{{item.safeRegion}}"
-            background-regions="{{item.backgroundRegions}}"
-            guide-lines="{{item.guideLines}}"
-            y-axis-ticks="{{item.yAxisTicks}}"
-            y-axis-max="{{item.yAxisMax}}"
-            y-axis-min="{{item.yAxisMin}}"
-          >
-          </line-chart>
-        </block>
-        <block wx:else>
-          <!-- 仅在“尿酸”需要时传递背景/参考线等配置；其他指标不传这些可选属性 -->
-          <block wx:if="{{item.title === '尿酸'}}">
-            <line-chart 
-              categories="{{item.categories}}" 
-              series="{{item.series}}"
-              minimal="{{true}}"
-              scientific="{{false}}"
-              show-background="{{item.showBackground}}"
-              safe-region="{{item.safeRegion}}"
-              background-regions="{{item.backgroundRegions}}"
-              guide-lines="{{item.guideLines}}"
-              y-axis-ticks="{{item.yAxisTicks}}"
-              y-axis-min="{{item.yAxisMin}}"
-            >
-            </line-chart>
-          </block>
-          <block wx:else>
-            <line-chart 
-              categories="{{item.categories}}" 
-              series="{{item.series}}"
-              minimal="{{true}}"
-              scientific="{{false}}"
-            >
-            </line-chart>
-          </block>
-        </block>
+        <line-chart 
+          categories="{{item.categories}}" 
+          series="{{item.series}}"
+          minimal="{{true}}"
+          scientific="{{false}}"
+        >
+        </line-chart>
       </block>
     </view>
   </view>
