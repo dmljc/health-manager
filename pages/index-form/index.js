@@ -13,7 +13,6 @@ Page({
         // 新增：数值输入与类型控制
         value: '',
         inputType: 'number', // HBV-DNA定量用 text，其它用 number
-        placeholder: '请输入数值，例如 12.3',
         valueError: ''
     },
 
@@ -41,11 +40,13 @@ Page({
     },
 
     bindPickerChange(e) {
-        const idx = e && e.detail ? Number(e.detail.value) : 0;
-        this.setData({ index: idx });
-        // 更新输入控制
-        this.updateInputControl();
-    },
+    const idx = e && e.detail ? Number(e.detail.value) : 0;
+    this.setData({ index: idx });
+    // 更新输入控制
+    this.updateInputControl();
+    // 清空检测数值与错误文案
+    this.setData({ value: '', valueError: '' });
+  },
 
     // 数值输入
     onValueInput(e) {
@@ -149,12 +150,6 @@ Page({
 
             // 显示成功提示
             wx.showToast({ title: '保存成功', icon: 'success', duration: 2000 });
-
-            // 延迟返回上一页
-            setTimeout(() => {
-                wx.navigateBack({ delta: 1 });
-            }, 2000);
-
         } catch (error) {
             console.error('Save failed:', error);
             wx.showToast({ title: '保存失败', icon: 'error' });
