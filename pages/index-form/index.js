@@ -36,7 +36,7 @@ Page({
         const isDNA = current.value === 'dna' || /DNA/i.test(String(current.label || ''));
         this.setData({
             inputType: 'text',
-            placeholder: '请输入检查数值或表达式（如 <=1.2e6）'
+            placeholder: '请输入检查数值'
         });
         // 不在类型切换时触发校验
     },
