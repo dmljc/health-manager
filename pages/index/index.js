@@ -1,9 +1,7 @@
-const USER_DATA = require('../../utils/user-health-data');
 const { vibrateLight } = require('../../utils/vibrate');
 
 Page({
   data: {
-    // 仅展示 user-health-data.js 数据生成的折线图块
     chartBlocks: []
   },
 
@@ -75,8 +73,8 @@ Page({
     try {
       const ok = this.ensureCloudInit();
       if (!ok) {
-        console.warn('wx.cloud 未就绪，回退本地示例数据');
-        this.buildChartsFromUserData();
+        console.warn('wx.cloud 未就绪，暂不显示数据');
+        this.setData({ chartBlocks: [] });
         return Promise.resolve();
       }
       wx.showLoading({ title: '加载数据', mask: true });
@@ -205,7 +203,7 @@ Page({
           });
 
           if (chartBlocks.length === 0) {
-            this.buildChartsFromUserData();
+            this.setData({ chartBlocks: [] });
           } else {
             this.setData({ chartBlocks });
           }
@@ -213,144 +211,18 @@ Page({
         .catch((e) => {
           wx.hideLoading();
           console.error('从云端读取 examination 失败:', e);
-          this.buildChartsFromUserData();
+          this.setData({ chartBlocks: [] });
         });
     } catch (e) {
       console.error('构建云端折线图失败:', e);
-      this.buildChartsFromUserData();
+      this.setData({ chartBlocks: [] });
       return Promise.resolve();
     }
   },
 
-  // 构建折线图数据：仅使用 user-health-data.js
+  // 已移除示例数据回退逻辑，保留空实现以兼容旧调用（不再使用）
   buildChartsFromUserData() {
-    try {
-      const chartBlocks = [];
-      const datasets = USER_DATA || {};
-
-      Object.keys(datasets).forEach((name) => {
-        const raw = Array.isArray(datasets[name]) ? datasets[name] : [];
-        if (!raw.length) return;
-
-        // 按日期升序
-        const sorted = raw.slice().sort((a, b) => new Date(a['日期']) - new Date(b['日期']));
-        const categories = sorted.map(r => this.formatDateLabel(r['日期']));
-
-        // 找出所有候选数值字段（排除“日期”）
-        const candidateKeys = Array.from(sorted.reduce((set, rec) => {
-          Object.keys(rec).forEach(k => { if (k !== '日期') set.add(k); });
-          return set;
-        }, new Set()));
-
-        // 仅保留“所有记录都为数值”的字段（支持科学计数法与前缀符号）
-        const numericKeys = candidateKeys.filter(k => sorted.every(rec => {
-          const v = rec[k];
-          const n = this.toNumeric(v);
-          return Number.isFinite(n);
-        }));
-
-        if (!numericKeys.length) return; // 无法绘制折线图则跳过
-
-        const series = numericKeys.map(k => ({
-          name: k,
-          data: sorted.map(rec => this.toNumeric(rec[k])),
-          // 保留原始字符串用于 tooltip 显示，如 "<3.0E+1"
-          displayData: sorted.map(rec => rec[k])
-        }));
-
-        // 若为 HBV-DNA 定量，仅显示在 3.0E+1（数值 30）水平线和 1.5E+1（数值 15）的 1/3 处。
-        // 其中数据值若小于 30（例如 "<3.0E+1" 被解析为 30），则将显示位置压到 30 的 1/6（约 5）。
-        if (name === 'HBV-DNA定量') {
-          const threshold = 30; // 3.0E+1
-          const oneThird = 15; // 1.5E+1
-          const oneSixth = 5;  // 30 的 1/6
-          // 仅调整显示用的 data 值（不改变原始数据结构）
-          const adjSeries = series.map(s => ({
-            name: s.name,
-            data: s.data.map(v => {
-              if (!Number.isFinite(v)) return v;
-              // 数据低于阈值时，绘制在 1/6 处
-              if (v < threshold) return oneSixth;
-              return v;
-            }),
-            displayData: s.displayData
-          }));
-          chartBlocks.push({ 
-            title: name, 
-            categories, 
-            series: adjSeries,
-            // 仅 HBV-DNA 定量启用科学记数法，固定 yMax=45（4.5E+1）
-            scientific: true,
-            yMax: threshold + oneThird,
-            yAxisTicks: [0, oneThird, threshold, threshold + oneThird],
-            guideLines: [
-              { y: threshold, color: '#DC2626', width: 1, dash: [4,4] },
-              { y: oneThird, color: '#A3A3A3', width: 1 },
-              // 覆盖 4.5E+1 位置的虚线为实线（与网格同色）
-              { y: threshold + oneThird, color: '#E5E7EB', width: 1 }
-            ]
-          });
-        } else {
-          // 为尿酸与甘油三酯注入通用组件可识别的配置
-          if (name === '尿酸') {
-            chartBlocks.push({ 
-              title: name, 
-              categories, 
-              series,
-              minimal: true,
-              scientific: false,
-              showBackground: false,
-              yAxisMin: 0,
-              yAxisTicks: [0, 208, 428],
-              safeRegion: {},
-              backgroundRegions: [
-                { min: 0, max: 208, color: '#FEF3C7' },
-                { min: 428, max: 600, color: '#FEF3C7' }
-              ],
-              guideLines: [
-                { y: 208, color: '#DC2626', width: 1, dash: [4,4] },
-                { y: 428, color: '#DC2626', width: 1, dash: [4,4] }
-              ]
-            });
-          } else if (name === '甘油三酯') {
-            chartBlocks.push({ 
-              title: name, 
-              categories, 
-              series,
-              minimal: true,
-              scientific: false,
-              showBackground: false,
-              yAxisMin: 0,
-              yAxisMax: 2.75,
-              yAxisTicks: [0, 1.7],
-              safeRegion: {},
-              backgroundRegions: [
-                { min: 1.7, max: 2.75, color: '#FEF3C7' }
-              ],
-              guideLines: [
-                { y: 1.7, color: '#DC2626', width: 1, dash: [4,4] }
-              ]
-            });
-          } else {
-            chartBlocks.push({ title: name, categories, series,
-              minimal: true,
-              scientific: false,
-              showBackground: false,
-              yAxisMin: 0,
-              yAxisTicks: [],
-              safeRegion: {},
-              backgroundRegions: [],
-              guideLines: [],
-              yAxisMax: undefined
-            });
-          }
-        }
-      });
-
-      this.setData({ chartBlocks });
-    } catch (e) {
-      console.error('构建折线图失败:', e);
-    }
+    this.setData({ chartBlocks: [] });
   }
   ,
   // 通用数值解析：支持数字、前缀符号（<、≤、>、≥）以及科学计数法与单位

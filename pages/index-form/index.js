@@ -1,3 +1,5 @@
+const { vibrateLight } = require('../../utils/vibrate');
+
 Page({
     data: {
         // 检查类型对象数组：label 为展示文本，value 为唯一代码
@@ -110,6 +112,9 @@ Page({
     },
 
     async onSave() {
+        // 点击即触发轻微震动反馈（统一封装）
+        vibrateLight({ type: 'light', silent: true });
+
         const { checkTypes, index, date, value } = this.data;
 
         // 其它字段的完整性校验（保留原有 toast 提示）
@@ -157,7 +162,6 @@ Page({
 
             if (res && res.result && res.result.success) {
                 wx.showToast({ title: '保存成功', icon: 'success', duration: 2000 });
-                // setTimeout(() => { wx.navigateBack({ delta: 1 }); }, 2000);
             } else {
                 const errMsg = (res && res.result && res.result.error) ? res.result.error : '保存失败';
                 wx.showToast({ title: errMsg, icon: 'none' });
