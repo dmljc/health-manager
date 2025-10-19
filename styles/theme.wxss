@@ -30,27 +30,9 @@
   --shadow-sm: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
   --shadow-md: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 24rpx 64rpx rgba(0, 0, 0, 0.16);
-}
 
-/* 暗色主题变量 */
-.theme-dark {
-  --bg-color: #111827;
-  --bg-secondary: #1F2937;
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
-
-  --primary-color: #3B82F6;
-  --primary-dark: #1E3A8A;
-
-  --success-color: #10B981;
-  --warning-color: #F59E0B;
-  --danger-color: #EF4444;
-
-  --border-color: #374151;
-  --divider-color: #374151;
-
-  --shadow-xs: 0 2rpx 8rpx rgba(0, 0, 0, 0.20);
-  --shadow-sm: 0 8rpx 24rpx rgba(0, 0, 0, 0.22);
-  --shadow-md: 0 16rpx 48rpx rgba(0, 0, 0, 0.24);
-  --shadow-lg: 0 24rpx 64rpx rgba(0, 0, 0, 0.28);
+  /* 兼容旧命名（非换肤项目） */
+  --color-bg: var(--bg-color);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
 }
