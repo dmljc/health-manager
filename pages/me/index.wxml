@@ -1,0 +1,31 @@
+<view class="me-page">
+  <view class="header">
+    <view class="avatar-box">
+      <image wx:if="{{userInfo && userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="avatar placeholder">👤</view>
+    </view>
+    <view class="info">
+      <text class="nick">{{userInfo && userInfo.nickName ? userInfo.nickName : '未登录'}}</text>
+      <text class="wxid">微信标识（OpenID）：{{userInfo ? (maskedUserId || '同步中') : '登录后显示'}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!userInfo}}">
+    <view class="card-title">授权登录</view>
+    <view class="card-desc">使用微信头像与昵称登录，并在云端保存资料。</view>
+    <view class="actions">
+      <button class="primary" bindtap="onAuthorizeTouch">
+        授权登录
+      </button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{userInfo}}">
+    <view class="card-title">账号状态</view>
+    <view class="card-desc">已登录。你可以随时退出登录，数据仍保留在云端。</view>
+    <view class="actions">
+      <button class="secondary" bindtap="onLogout" hover-class="tap-active">退出登录</button>
+      <button class="secondary" bindtap="onLogoutAndClear" hover-class="tap-active">退出并清缓存</button>
+    </view>
+  </view>
+</view>

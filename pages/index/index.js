@@ -1,4 +1,5 @@
 const { vibrateLight } = require('../../utils/vibrate');
+const { isAuthed, authorizeAndSave } = require('../../utils/auth');
 
 Page({
   data: {
@@ -220,11 +221,6 @@ Page({
     }
   },
 
-  // 已移除示例数据回退逻辑，保留空实现以兼容旧调用（不再使用）
-  buildChartsFromUserData() {
-    this.setData({ chartBlocks: [] });
-  }
-  ,
   // 通用数值解析：支持数字、前缀符号（<、≤、>、≥）以及科学计数法与单位
   toNumeric(value) {
     if (typeof value === 'number') return value;
@@ -244,11 +240,30 @@ Page({
     return NaN;
   },
 
-  // 打开指标新增/修改页面
-  openIndicatorForm() {
-    try {
-      vibrateLight && vibrateLight({ type: 'light', silent: true });
-    } catch (_) {}
+
+  // 打开指标新增/修改页面（授权作为首动作，避免“过于频繁”与不弹窗）
+  async openIndicatorForm() {
+    let authed = false;
+    try { authed = isAuthed(); } catch (_) { authed = false; }
+    if (!authed) {
+      if (this._authInFlight) return;
+      this._authInFlight = true;
+      const { ok } = await this.ensureAuthorized();
+      this._authInFlight = false;
+      if (!ok) return;
+    }
     wx.navigateTo({ url: '/pages/index-form/index' });
+  },
+
+  // 就地授权：允许用户快速重复操作，仅保留并发守卫（通用工具实现）
+  async ensureAuthorized() {
+    if (this._ensureAuthBusy) return { ok: false };
+    this._ensureAuthBusy = true;
+    try {
+      const res = await authorizeAndSave();
+      return res;
+    } finally {
+      this._ensureAuthBusy = false;
+    }
   }
 });

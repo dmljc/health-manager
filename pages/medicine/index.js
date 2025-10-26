@@ -1,6 +1,7 @@
 // 云函数入口文件
 const { vibrateForAction, vibrateLight } = require("../../utils/vibrate");
 const { formatCurrentDate, getToday, getCurrentTimeHHmm } = require("../../utils/date");
+const { isAuthed, authorizeAndSave } = require("../../utils/auth");
 
 Page({
   data: {
@@ -30,7 +31,7 @@ Page({
     try {
       if (!wx.cloud || !wx.cloud._inited) {
         wx.cloud.init({
-          env: "cloud1-3grp4xen3b5be11c",
+          env: wx.cloud.DYNAMIC_CURRENT_ENV,
           traceUser: true,
         });
       }
@@ -127,7 +128,18 @@ Page({
   async handleMedicineStatusToggle() {
     console.log("handleMedicineStatusToggle method triggered");
 
-    // 触发轻震动反馈（点击操作）
+    // 若未授权，首动作就地授权，避免先振动打断事件链
+    let authed = false;
+    try { authed = isAuthed(); } catch (_) { authed = false; }
+    if (!authed) {
+      if (this._authInFlight) return;
+      this._authInFlight = true;
+      const { ok } = await this.ensureAuthorized();
+      this._authInFlight = false;
+      if (!ok) return;
+    }
+
+    // 触发轻震动反馈（点击操作）在授权之后
     try {
       vibrateForAction && vibrateForAction('click');
     } catch (_) {}
@@ -140,23 +152,31 @@ Page({
     const newStatus = this.data.hasTakenToday ? 0 : 1; // 直接基于本地状态切换 0/1
 
     this.setData({ isToggling: true }); // 显示加载状态
-
-      this.updateMedicineData(newStatus)
-        .then(() => {
-          this.setData({
-          hasTakenToday: newStatus === 1, // 更新本地状态
-          isToggling: false, // 关闭加载状态
-          });
-          console.log("药物状态更新成功");
-        })
-      .catch((err) => {
-        this.setData({ isToggling: false }); // 关闭加载状态
-        wx.showToast({
-          title: "状态更新失败",
-          icon: "none",
+    this.updateMedicineData(newStatus)
+      .then(() => {
+        this.setData({
+          hasTakenToday: newStatus === 1,
+          isToggling: false,
         });
+        console.log("药物状态更新成功");
+      })
+      .catch((err) => {
+        this.setData({ isToggling: false });
+        wx.showToast({ title: "状态更新失败", icon: "none" });
         console.error("药物状态更新失败:", err);
       });
+  },
+
+  // 就地授权：允许用户快速重复操作，仅保留并发守卫（通用工具实现）
+  async ensureAuthorized() {
+    if (this._ensureAuthBusy) return { ok: false };
+    this._ensureAuthBusy = true;
+    try {
+      const res = await authorizeAndSave();
+      return res;
+    } finally {
+      this._ensureAuthBusy = false;
+    }
   },
 
   // 底部 Tab 点击切换到“服药”时触发震动反馈
@@ -170,7 +190,7 @@ Page({
     try {
       if (!wx.cloud || !wx.cloud._inited) {
         wx.cloud.init({
-          env: "cloud1-3grp4xen3b5be11c",
+          env: wx.cloud.DYNAMIC_CURRENT_ENV,
           traceUser: true,
         });
       }
@@ -342,7 +362,7 @@ Page({
     try {
       if (!wx.cloud || !wx.cloud._inited) {
         wx.cloud.init({
-          env: "cloud1-3grp4xen3b5be11c",
+          env: wx.cloud.DYNAMIC_CURRENT_ENV,
           traceUser: true,
         });
       }
@@ -400,5 +420,9 @@ Page({
     });
 
     this.fetchMedicineData(); // 确保页面加载时调用 fetchMedicineData
+  },
+
+  onShow() {
+    // 移除 pending_action 续操作逻辑（当前未设置该键，避免冗余流程）
   },
 });

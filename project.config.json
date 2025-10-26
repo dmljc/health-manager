@@ -21,7 +21,7 @@
         "condition": false,
         "swc": false,
         "disableSWC": true,
-        "lazyCodeLoading": true,
+        "lazyCodeLoading": false,
         "ignoreDevUnusedFiles": false,
         "useTypeScript": false,
         "compileHotReLoad": false,
@@ -41,4 +41,9 @@
         "include": []
     },
     "editorSetting": {}
+,    "cloudbaseSettings": {
+        "envlist": [
+            { "envId": "cloud1-3grp4xen3b5be11c", "alias": "default" }
+        ]
+    }
 }

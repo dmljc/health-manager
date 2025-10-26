@@ -1,10 +1,11 @@
 {
-    "lazyCodeLoading": "requiredComponents",
+
     "pages": [
         "pages/index/index",
         "pages/index-form/index",
         "pages/medicine/index",
-        "pages/statistics/index"
+        "pages/statistics/index",
+        "pages/me/index"
     ],
     "window": {
         "navigationBarBackgroundColor": "#F7F8FA",
@@ -38,6 +39,12 @@
                 "iconPath": "images/icons/stats.png",
                 "selectedIconPath": "images/icons/stats-active.png",
                 "text": "统计"
+            },
+            {
+                "pagePath": "pages/me/index",
+                "iconPath": "images/icons/expense.png",
+                "selectedIconPath": "images/icons/expense-active.png",
+                "text": "我的"
             }
         ]
     },

@@ -59,8 +59,8 @@
       </block>
     </view>
   </view>
-  <!-- 右下角悬浮新增按钮 -->
+  <!-- 右下角悬浮新增按钮：改用普通 view，避免原生组件限制 -->
   <view class="floating-action-btn" bindtap="openIndicatorForm">
-    <text class="floating-action-icon">＋</text>
+    <view class="floating-action-icon">＋</view>
   </view>
 </view>

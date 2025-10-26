@@ -1,0 +1,9 @@
+{
+  "name": "userProfile",
+  "version": "1.0.0",
+  "description": "云函数：保存/获取用户资料（users 集合）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "3.0.1"
+  }
+}
