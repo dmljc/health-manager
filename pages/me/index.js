@@ -4,6 +4,8 @@ Page({
     loading: false,
     userId: '',
     maskedUserId: '',
+    pendingAvatarUrl: '',
+    pendingNickName: '',
   },
 
   onLoad() {
@@ -22,22 +24,30 @@ Page({
     this.fetchUserId();
   },
 
-  async onAuthorizeTouch() {
+  onChooseAvatar(e) {
+    const url = (e && e.detail && e.detail.avatarUrl) ? e.detail.avatarUrl : '';
+    this.setData({ pendingAvatarUrl: url });
+  },
+
+  onNicknameInput(e) {
+    const v = (e && e.detail && e.detail.value) ? e.detail.value : '';
+    this.setData({ pendingNickName: v });
+  },
+
+  async onSubmitProfile() {
     if (this._authBusy) return;
     this._authBusy = true;
     try {
       const { authorizeAndSave } = require('../../utils/auth');
-      const result = await authorizeAndSave({ desc: '用于同步头像昵称并保存到云端' });
+      const { pendingNickName, pendingAvatarUrl } = this.data;
+      const result = await authorizeAndSave({ profile: { nickName: pendingNickName, avatarUrl: pendingAvatarUrl } });
       if (result && result.ok && result.userInfo) {
         this.setData({ userInfo: result.userInfo });
         this.fetchUserId();
-        wx.showToast({ title: '已授权并登录', icon: 'success' });
+        wx.showToast({ title: '已保存并登录', icon: 'success' });
       }
     } catch (err) {
-      const msg = /privacy permission not set/.test((err && err.errMsg) || '')
-        ? '需在开发者工具配置"隐私接口使用说明"后重新编译'
-        : `授权取消或失败: ${err && err.errMsg ? err.errMsg : '未知错误'}`;
-      wx.showToast({ title: msg, icon: 'none', duration: 3000 });
+      wx.showToast({ title: '资料保存失败', icon: 'none', duration: 3000 });
     } finally {
       this._authBusy = false;
     }

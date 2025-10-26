@@ -11,12 +11,12 @@
   </view>
 
   <view class="card" wx:if="{{!userInfo}}">
-    <view class="card-title">授权登录</view>
-    <view class="card-desc">使用微信头像与昵称登录，并在云端保存资料。点击后将弹出微信授权弹框。</view>
+    <view class="card-title">完善资料</view>
+    <view class="card-desc">选择头像并填写昵称，保存后用于登录与云端备份。</view>
     <view class="actions">
-      <button class="primary" bindtap="onAuthorizeTouch" hover-class="tap-active" open-type="getUserProfile" lang="zh_CN">
-        授权登录
-      </button>
+      <button class="secondary" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">选择头像</button>
+      <input class="nick-input" type="nickname" placeholder="填写昵称" bindinput="onNicknameInput" value="{{pendingNickName}}" />
+      <button class="primary" bindtap="onSubmitProfile" hover-class="tap-active">保存资料并登录</button>
     </view>
   </view>
 
