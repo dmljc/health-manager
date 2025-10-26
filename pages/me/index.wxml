@@ -12,9 +12,9 @@
 
   <view class="card" wx:if="{{!userInfo}}">
     <view class="card-title">授权登录</view>
-    <view class="card-desc">使用微信头像与昵称登录，并在云端保存资料。</view>
+    <view class="card-desc">使用微信头像与昵称登录，并在云端保存资料。点击后将弹出微信授权弹框。</view>
     <view class="actions">
-      <button class="primary" bindtap="onAuthorizeTouch">
+      <button class="primary" bindtap="onAuthorizeTouch" hover-class="tap-active" open-type="getUserProfile" lang="zh_CN">
         授权登录
       </button>
     </view>

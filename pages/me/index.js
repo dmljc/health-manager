@@ -27,7 +27,7 @@ Page({
     this._authBusy = true;
     try {
       const { authorizeAndSave } = require('../../utils/auth');
-      const result = await authorizeAndSave();
+      const result = await authorizeAndSave({ desc: '用于同步头像昵称并保存到云端' });
       if (result && result.ok && result.userInfo) {
         this.setData({ userInfo: result.userInfo });
         this.fetchUserId();

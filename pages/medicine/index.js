@@ -172,7 +172,7 @@ Page({
     if (this._ensureAuthBusy) return { ok: false };
     this._ensureAuthBusy = true;
     try {
-      const res = await authorizeAndSave();
+      const res = await authorizeAndSave({ desc: '用于同步头像昵称并保存到云端' });
       return res;
     } finally {
       this._ensureAuthBusy = false;
