@@ -192,9 +192,6 @@ Component({
           borderColor: '#E5E7EB',
           borderWidth: 1,
           // 不设置 width，保持自适应
-          onShow: (item, category, index, opts) => {
-            wx.vibrateShort && wx.vibrateShort({ type: 'light' });
-          }
         }
       });
     },

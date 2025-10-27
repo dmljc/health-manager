@@ -1,5 +1,5 @@
 // 云函数入口文件
-const { vibrateForAction, vibrateLight } = require("../../utils/vibrate");
+// 震动反馈已移除：不再导入 vibrateLight/vibrateForAction
 const { formatCurrentDate, getToday, getCurrentTimeHHmm } = require("../../utils/date");
 const { isAuthed, authorizeAndSave } = require("../../utils/auth");
 
@@ -139,10 +139,7 @@ Page({
       if (!ok) return;
     }
 
-    // 触发轻震动反馈（点击操作）在授权之后
-    try {
-      vibrateForAction && vibrateForAction('click');
-    } catch (_) {}
+    // 震动反馈已移除
 
     // 防重复点击：正在切换时直接返回
     if (this.data.isToggling) {
@@ -181,9 +178,7 @@ Page({
 
   // 底部 Tab 点击切换到“服药”时触发震动反馈
   onTabItemTap(item) {
-    try {
-      vibrateLight && vibrateLight({ type: 'light', silent: true });
-    } catch (_) {}
+    // 震动反馈已移除
   },
 
   async updateMedicineData(medicineStatus) {
@@ -294,7 +289,7 @@ Page({
 
   // 打开设置总量弹框
   openModal() {
-    try { vibrateForAction && vibrateForAction('click'); } catch (_) {}
+    // 震动反馈已移除
     const initValue = String(this.data.medicineTotal || '').trim();
     this.setData({
       showModal: true,

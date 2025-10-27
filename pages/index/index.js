@@ -1,4 +1,3 @@
-const { vibrateLight } = require('../../utils/vibrate');
 const { isAuthed, authorizeAndSave } = require('../../utils/auth');
 
 Page({
@@ -29,9 +28,7 @@ Page({
 
   // 底部 Tab 点击切换到首页时触发轻震动反馈
   onTabItemTap(item) {
-    try {
-      vibrateLight({ type: 'light', silent: true });
-    } catch (_) {}
+    // 震动反馈已移除
   },
 
   // 云环境初始化（按需，仅初始化一次）

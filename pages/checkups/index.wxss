@@ -11,4 +11,3 @@
 
 .empty-text { color: var(--color-text); font-size: 32rpx; font-weight: 600; }
 .empty-sub { color: var(--color-text-secondary); font-size: 24rpx; margin-top: 8rpx; }
-.empty-hint { color: #999; font-size: 20rpx; margin-top: 24rpx; opacity: 0.7; }

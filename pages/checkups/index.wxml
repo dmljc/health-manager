@@ -1,6 +1,5 @@
 <view class="page-empty" bindtap="onPageTap">
   <text class="empty-text">此页面已清空--体检</text>
   <text class="empty-sub">仅保留底部导航占位</text>
-  <text class="empty-hint">轻触页面体验震动反馈</text>
 </view>
 

@@ -1,4 +1,4 @@
-const { vibrateLight } = require('../../utils/vibrate');
+// 震动反馈已移除：不再导入 vibrateLight
 
 Page({
     data: {
@@ -112,9 +112,8 @@ Page({
     },
 
     async onSave() {
-        // 点击即触发轻微震动反馈（统一封装）
-        vibrateLight({ type: 'light', silent: true });
-
+        // 震动反馈已移除
+        
         const { checkTypes, index, date, value } = this.data;
 
         // 其它字段的完整性校验（保留原有 toast 提示）

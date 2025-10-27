@@ -59,9 +59,6 @@ Component({
                 m = 12;
                 y -= 1;
             }
-            if (wx && wx.vibrateShort) {
-                wx.vibrateShort({ type: "light" });
-            }
             const grid = this._buildMonthGrid(y, m, this.data.selectedDate);
             this.setData({ calendar: { year: y, month: m, grid } });
             this.triggerEvent("monthchange", { year: y, month: m });
@@ -75,9 +72,6 @@ Component({
                 m = 1;
                 y += 1;
             }
-            if (wx && wx.vibrateShort) {
-                wx.vibrateShort({ type: "light" });
-            }
             const grid = this._buildMonthGrid(y, m, this.data.selectedDate);
             this.setData({ calendar: { year: y, month: m, grid } });
             this.triggerEvent("monthchange", { year: y, month: m });
@@ -89,9 +83,6 @@ Component({
         onSelectDate(e) {
             const date = e.currentTarget.dataset.date;
             if (!date) return;
-            if (wx && wx.vibrateShort) {
-                wx.vibrateShort({ type: "light" });
-            }
             const { year, month } = this.data.calendar;
             const grid = this._buildMonthGrid(year, month, date);
             this.setData({ selectedDate: date, calendar: { year, month, grid } });
