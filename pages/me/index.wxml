@@ -1,22 +1,46 @@
 <view class="me-page">
-  <view class="header">
-    <view class="avatar-box">
-      <image wx:if="{{userInfo && userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
-      <view wx:else class="avatar placeholder">👤</view>
-    </view>
-    <view class="info">
-      <text class="nick">{{userInfo && userInfo.nickName ? userInfo.nickName : '未登录'}}</text>
-      <text class="wxid">微信标识（OpenID）：{{userInfo ? (maskedUserId || '同步中') : '登录后显示'}}</text>
+  <view class="card account-card">
+    <view class="card-row" bindtap="onAccountCardTap">
+      <view class="avatar-box">
+        <image wx:if="{{userInfo && userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar placeholder">👤</view>
+      </view>
+      <view class="info">
+        <view class="nick">
+          <text wx:if="{{userInfo}}">{{userInfo.nickName}}</text>
+          <text wx:else>未登录</text>
+        </view>
+        <view class="wxid">
+          OpenID：
+          <text wx:if="{{userInfo}}">{{maskedUserId || '同步中'}} </text>
+          <text wx:else> 登录后显示</text>
+        </view>
+      </view>
     </view>
   </view>
 
-  <view class="card" wx:if="{{!userInfo}}">
-    <view class="card-title">完善资料</view>
-    <view class="card-desc">选择头像并填写昵称，保存后用于登录与云端备份。</view>
-    <view class="actions">
-      <button class="secondary" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">选择头像</button>
-      <input class="nick-input" type="nickname" placeholder="填写昵称" bindinput="onNicknameInput" value="{{pendingNickName}}" />
-      <button class="primary" bindtap="onSubmitProfile" hover-class="tap-active">保存资料并登录</button>
+  <view id="profile-card" class="card" wx:if="{{!userInfo && showProfileForm}}">
+    <view class="avatar-select">
+      <button class="avatar-large-btn" hover-class="tap-active" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{pendingAvatarUrl}}" class="avatar-large" src="{{pendingAvatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar-large placeholder">👤</view>
+        <view class="avatar-plus">+</view>
+      </button>
+      <view class="avatar-text">
+        <view class="card-title">完善资料</view>
+        <view class="card-desc">选择头像并填写昵称，保存后用于登录与云端备份。</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="label">昵称</view>
+      <input class="value" type="nickname" placeholder="填写昵称" placeholder-class="input-ph" bindinput="onNicknameInput" value="{{pendingNickName}}" />
+    </view>
+
+    <view class="save-section">
+      <button class="save-btn" bindtap="onSubmitProfile" hover-class="tap-active">
+        <text class="save-text">保存资料并登录</text>
+      </button>
     </view>
   </view>
 

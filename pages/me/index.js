@@ -6,13 +6,12 @@ Page({
     maskedUserId: '',
     pendingAvatarUrl: '',
     pendingNickName: '',
+    showProfileForm: false,
   },
 
   onLoad() {
     const storedProfile = wx.getStorageSync('user_profile');
-    this.setData({
-      userInfo: storedProfile || null,
-    });
+    this.setData({ userInfo: storedProfile || null });
     this.fetchUserId();
   },
 
@@ -32,6 +31,17 @@ Page({
   onNicknameInput(e) {
     const v = (e && e.detail && e.detail.value) ? e.detail.value : '';
     this.setData({ pendingNickName: v });
+  },
+
+  scrollToProfileCard() {
+    if (this.data.userInfo) return;
+    this.setData({ showProfileForm: true });
+  },
+
+  onAccountCardTap() {
+    if (!this.data.userInfo) {
+      this.scrollToProfileCard();
+    }
   },
 
   async onSubmitProfile() {
