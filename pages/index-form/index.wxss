@@ -64,24 +64,16 @@
 
 .save-btn {
     width: 100%;
-    /* 从左到右的渐变：主题蓝色到白色 */
-    background: linear-gradient(0deg, #0A7AFF 0%, #FFFFFF 100%);
-    border: 1rpx solid #F0F0F0;
-    border-radius: var(--radius-xl);
+    height: 96rpx;
+    background: linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%);
+    border: none;
+    border-radius: 999rpx;
     padding: 0;
     margin: 0;
-    /* 柔和扩散阴影 */
-    box-shadow:
-        0 6px 16px rgba(37, 99, 235, 0.08),
-        0 16px 32px rgba(37, 99, 235, 0.06),
-        0 36px 72px rgba(37, 99, 235, 0.05);
-    transition: all 0.3s ease;
+    box-shadow: 0 12rpx 24rpx rgba(79, 70, 229, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    /* 移除图标后不需要元素间距 */
-    gap: 0;
-    border-radius: 20rpx;
 }
 
 .save-btn::after {
@@ -94,7 +86,7 @@
 }
 
 .save-text {
-    color: #1F2937;
+    color: #fff;
     font-size: 32rpx;
     font-weight: 600;
     letter-spacing: 1rpx;

@@ -29,7 +29,7 @@
         </view>
         <!-- 底部保存按钮 -->
         <view class="save-section">
-            <button class="save-btn" bindtap="onSave" hover-class="save-btn-hover">
+            <button class="save-btn" bindtap="onSave" hover-class="tap-active">
                 <text class="save-text">保存记录</text>
             </button>
         </view>
