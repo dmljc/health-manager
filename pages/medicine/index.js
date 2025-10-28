@@ -59,7 +59,7 @@ Page({
           medicineColorClass: nextColor,
         });
       } else {
-        console.warn("未找到当天记录，请检查数据或日期格式。");
+        // 当天无记录：静默处理并更新 UI，不再输出控制台告警
         const fixedTotal = 28;
         const invRemaining = inventory && typeof inventory.medicineRemaining !== 'undefined' ? Number(inventory.medicineRemaining) : this.data.medicineRemaining;
         const nextColor = this.computeRemainingColorClass(fixedTotal, invRemaining);
@@ -77,7 +77,7 @@ Page({
       try {
         wx.setStorageSync("med_records", list);
       } catch (e) {
-        console.warn("写入本地缓存失败 med_records:", e);
+        // 写入本地缓存失败不阻塞流程，减少控制台噪音
       }
       this.setData({
         medicineList: list,
@@ -116,7 +116,6 @@ Page({
       }
 
       wx.showToast({ title: "未找到当天记录", icon: "none" });
-      console.warn("未找到当天记录，todayDate:", this.data.todayDate);
       return null;
     } catch (err) {
       wx.showToast({ title: "云函数调用失败", icon: "none" });
@@ -126,7 +125,7 @@ Page({
   },
 
   async handleMedicineStatusToggle() {
-    console.log("handleMedicineStatusToggle method triggered");
+    // 用户点击圆形按钮，开始切换状态
 
     // 若未授权，首动作就地授权，避免先振动打断事件链
     let authed = false;
@@ -155,7 +154,7 @@ Page({
           hasTakenToday: newStatus === 1,
           isToggling: false,
         });
-        console.log("药物状态更新成功");
+        // 药物状态更新成功
       })
       .catch((err) => {
         this.setData({ isToggling: false });
@@ -401,14 +400,13 @@ Page({
         medicineRemaining: invRemaining,
         medicineColorClass: invColor,
       });
-    } catch (e) {
-      console.warn('刷新列表失败（不影响库存保存）:', e);
-    }
+      } catch (e) {
+        // 刷新列表失败（不影响库存保存）
+      }
   },
 
   onLoad(options) {
     const todayDate = getToday(); // 使用 YYYY-MM-DD
-    console.log("初始化 todayDate:", todayDate); // 打印 todayDate
     this.setData({
       todayDate, // 初始化 todayDate
       selectedDate: todayDate, // 设置默认选中日期

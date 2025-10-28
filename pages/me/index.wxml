@@ -44,12 +44,10 @@
     </view>
   </view>
 
-  <view class="card" wx:if="{{userInfo}}">
-    <view class="card-title">账号状态</view>
-    <view class="card-desc">已登录。你可以随时退出登录，数据仍保留在云端。</view>
-    <view class="actions">
-      <button class="secondary" bindtap="onLogout" hover-class="tap-active">退出登录</button>
-      <button class="secondary" bindtap="onLogoutAndClear" hover-class="tap-active">退出并清缓存</button>
-    </view>
+  <!-- 登录后仅保留一个与“保存资料并登录”样式一致的退出按钮 -->
+  <view class="save-section" wx:if="{{userInfo}}">
+    <button class="save-btn" bindtap="onLogout" hover-class="tap-active">
+      <text class="save-text">退出登录</text>
+    </button>
   </view>
 </view>

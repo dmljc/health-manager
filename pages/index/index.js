@@ -243,11 +243,9 @@ Page({
     let authed = false;
     try { authed = isAuthed(); } catch (_) { authed = false; }
     if (!authed) {
-      if (this._authInFlight) return;
-      this._authInFlight = true;
-      const { ok } = await this.ensureAuthorized();
-      this._authInFlight = false;
-      if (!ok) return;
+      // 未登录时提示并终止后续跳转
+      wx.showToast({ title: '请先微授权登录', icon: 'none' });
+      return;
     }
     wx.navigateTo({ url: '/pages/index-form/index' });
   },
