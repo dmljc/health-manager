@@ -193,8 +193,8 @@
     /* 对齐 AntD 默认 56px（约 112rpx） */
     height: 112rpx;
     border-radius: 50%;
-    /* 渐变：顶部为基础背景色，底部为白色 */
-    background: linear-gradient(180deg, #0A7AFF 0%, #FFFFFF 100%);
+    /* 主题紫色渐变 */
+    background: linear-gradient(135deg, #7C3AED 30%, #4F46E5 70%);
     color: #1F2937;
     /* 柔和扩散阴影 */
     box-shadow:
@@ -217,7 +217,7 @@
     font-size: 56rpx;
     /* 更接近 AntD 图标大小比例 */
     font-weight: 600;
-    color: #111827;
+    color: #FFFFFF;
     /* 深色图标，适配浅色渐变背景 */
     line-height: 1;
 }
