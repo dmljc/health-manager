@@ -1,25 +1,28 @@
 <view class="me-page">
-  <view class="card account-card">
-    <view class="card-row" bindtap="onAccountCardTap">
+  <!-- 未登录时显示渐变 Hero -->
+  <view class="hero" wx:if="{{!userInfo}}">
+    <view class="hero-title">完善资料</view>
+    <view class="wxid-line">
+      <text class="wxid-text">微信标识 (OpenID)：</text>
+      <view class="pill pill-gradient">登录后显示</view>
+    </view>
+  </view>
+
+  <!-- 已登录时显示账户信息卡片 -->
+  <view class="card account-card" wx:else>
+    <view class="card-row">
       <view class="avatar-box">
-        <image wx:if="{{userInfo && userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="avatar placeholder">👤</view>
+        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
       </view>
       <view class="info">
-        <view class="nick">
-          <text wx:if="{{userInfo}}">{{userInfo.nickName}}</text>
-          <text wx:else>未登录</text>
-        </view>
-        <view class="wxid">
-          OpenID：
-          <text wx:if="{{userInfo}}">{{maskedUserId || '同步中'}} </text>
-          <text wx:else> 登录后显示</text>
-        </view>
+        <view class="nick">{{userInfo.nickName}}</view>
+        <view class="wxid">OpenID：{{maskedUserId || '同步中'}}</view>
       </view>
     </view>
   </view>
 
-  <view id="profile-card" class="card" wx:if="{{!userInfo && showProfileForm}}">
+  <!-- 未登录时显示资料完善卡片 -->
+  <view id="profile-card" class="card" wx:if="{{!userInfo}}">
     <view class="avatar-select">
       <button class="avatar-large-btn" hover-class="tap-active" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
         <image wx:if="{{pendingAvatarUrl}}" class="avatar-large" src="{{pendingAvatarUrl}}" mode="aspectFill" />
@@ -27,7 +30,7 @@
         <view class="avatar-plus">+</view>
       </button>
       <view class="avatar-text">
-        <view class="card-title">完善资料</view>
+        <!-- <view class="card-title">完善资料</view> -->
         <view class="card-desc">选择头像并填写昵称，保存后用于登录与云端备份。</view>
       </view>
     </view>

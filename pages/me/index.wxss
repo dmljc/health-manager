@@ -3,42 +3,37 @@
 .me-page {
     min-height: 100vh;
     background: var(--color-bg);
-    padding: 0 32rpx calc(80rpx + env(safe-area-inset-bottom));
+    padding: 0 0 calc(80rpx + env(safe-area-inset-bottom));
 }
 
-/* 简洁 Hero（去掉渐变与动态逻辑） */
+/* 渐变 Hero 区域 */
 .hero {
-    background: transparent;
-    padding: 32rpx 0 24rpx;
-    color: #111827;
+    background: linear-gradient(180deg, #7C3AED 0%, #4F46E5 100%);
+    padding: 48rpx 32rpx 120rpx;
+    color: #fff;
     text-align: center;
-    margin: 0 0 24rpx;
+    border-radius: 0 0 48rpx 48rpx;
+    margin-bottom: -80rpx;
+    /* 让白色卡片上移，形成重叠效果 */
 }
 
 .hero-title {
-    font-size: 44rpx;
+    font-size: 48rpx;
     font-weight: 700;
-    letter-spacing: 1rpx;
-}
-
-.hero-title-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 16rpx;
-    flex-wrap: wrap;
-    justify-content: center;
+    letter-spacing: 2rpx;
+    margin-bottom: 16rpx;
 }
 
 .wxid-line {
     display: inline-flex;
     align-items: center;
     gap: 12rpx;
-    color: #6B7280;
+    color: #E0E7FF;
     font-size: 26rpx;
 }
 
 .wxid-text {
-    opacity: 0.95;
+    opacity: 0.8;
 }
 
 .pill {
@@ -48,9 +43,27 @@
 }
 
 .pill-gradient {
-    background: linear-gradient(90deg, #7C3AED 0%, #2563EB 100%);
+    background: rgba(255, 255, 255, 0.15);
     color: #fff;
-    box-shadow: 0 6rpx 12rpx rgba(37, 99, 235, 0.20);
+}
+
+/* 卡片通用样式调整 */
+.card {
+    background: #fff;
+    border-radius: 32rpx;
+    padding: 32rpx;
+    box-shadow: 0 20rpx 40rpx rgba(17, 24, 39, 0.08);
+    margin: 0 32rpx 24rpx;
+    position: relative;
+    /* 确保在 Hero 之上 */
+    z-index: 10;
+}
+
+/* 已登录的账户信息卡片 */
+.account-card .card-row {
+    display: flex;
+    align-items: center;
+    gap: 24rpx;
 }
 
 .avatar-box {
@@ -58,7 +71,6 @@
     height: 120rpx;
     border-radius: 60rpx;
     overflow: hidden;
-    margin-right: 20rpx;
 }
 
 .avatar {
@@ -66,24 +78,14 @@
     height: 100%;
 }
 
-.avatar.placeholder {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 60rpx;
-    background: #F3F4F6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48rpx;
-}
-
 .info {
     display: flex;
     flex-direction: column;
+    gap: 8rpx;
 }
 
 .nick {
-    font-size: 32rpx;
+    font-size: 36rpx;
     font-weight: 600;
     color: #111827;
 }
@@ -91,94 +93,28 @@
 .wxid {
     font-size: 28rpx;
     color: #6B7280;
-    margin-top: 6rpx;
 }
 
-/* 未登录显示为可点击链接 */
-.login-link {
-    color: #2563EB;
-}
-
-.card {
-    background: #fff;
-    border-radius: 32rpx;
-    padding: 24rpx;
-    box-shadow: 0 20rpx 40rpx rgba(17, 24, 39, 0.10);
-    margin-bottom: 24rpx;
-    margin-top: 0;
-}
-
+/* 资料完善卡片 */
 .card-title {
     font-size: 32rpx;
     font-weight: 700;
-    margin-bottom: 0;
-    line-height: 1.2;
+    margin-bottom: 6rpx;
 }
 
 .card-desc {
     font-size: 26rpx;
     color: #6B7280;
-    margin-bottom: 0;
-    line-height: 1.6;
+    margin-bottom: 24rpx;
 }
 
-/* 退出登录区域仍使用通用 actions 样式 */
-.actions {
-    display: flex;
-    gap: 16rpx;
-}
-
-/* 白卡通用：左图右文行布局 */
-.card-row {
+.avatar-select {
     display: flex;
     align-items: center;
     gap: 24rpx;
-}
-
-.primary {
-    background: #2563EB;
-    color: #fff;
-    border-radius: 16rpx;
-    padding: 20rpx 32rpx;
-}
-
-.secondary {
-    background: #F3F4F6;
-    color: #111827;
-    border-radius: 16rpx;
-    padding: 20rpx 32rpx;
-}
-
-/* 对齐“新增检查记录”页的字段样式 */
-.field {
     margin-bottom: 24rpx;
 }
 
-.label {
-    font-size: 26rpx;
-    color: #64748B;
-    margin-bottom: 10rpx;
-}
-
-.value {
-    border: 1rpx solid #E5E7EB;
-    border-radius: 999rpx;
-    padding: 24rpx 28rpx;
-    font-size: 28rpx;
-    color: #111827;
-    background: #fff;
-    box-shadow: 0 10rpx 24rpx rgba(17, 24, 39, 0.06);
-}
-
-/* 大尺寸头像选择与加号徽标 */
-.avatar-select {
-    display: flex;
-    align-items: flex-start;
-    gap: 24rpx;
-    margin-bottom: 24rpx;
-}
-
-/* 右侧文本列布局：标题在上、描述在下 */
 .avatar-text {
     display: flex;
     flex-direction: column;
@@ -187,10 +123,9 @@
 }
 
 .avatar-large-btn {
-    position: relative;
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 60rpx;
+    position: relative; /* Ensure the plus icon is positioned correctly */
+    width: 200rpx;
+    height: 200rpx;
     padding: 0;
     margin: 0;
     border: none;
@@ -201,50 +136,10 @@
     flex-shrink: 0;
 }
 
-.avatar-large.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 56rpx;
-    color: #9CA3AF;
-}
-
-.avatar-plus {
-    position: absolute;
-    right: -6rpx;
-    bottom: -6rpx;
-    width: 40rpx;
-    height: 40rpx;
-    border-radius: 20rpx;
-    background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    box-shadow: 0 6rpx 12rpx rgba(37, 99, 235, 0.18);
-}
-
-.card-title {
-    font-size: 30rpx;
-    font-weight: 600;
-    margin-bottom: 6rpx;
-}
-
-.card-desc {
-    font-size: 26rpx;
-    color: #6B7280;
-    margin-bottom: 18rpx;
-}
-
-.avatar-large-btn::after {
-    border: none;
-}
-
 .avatar-large {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 60rpx;
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
     background: #F3F4F6;
 }
 
@@ -258,44 +153,96 @@
 
 .avatar-plus {
     position: absolute;
-    right: -6rpx;
-    bottom: -6rpx;
-    width: 40rpx;
-    height: 40rpx;
-    border-radius: 20rpx;
-    background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
+    right: 0rpx;
+    bottom: 0rpx;
+    width: 48rpx;
+    height: 48rpx;
+    border-radius: 24rpx;
+    background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    box-shadow: 0 6rpx 12rpx rgba(37, 99, 235, 0.18);
+    font-size: 32rpx;
+    box-shadow: 0 6rpx 12rpx rgba(79, 70, 229, 0.25);
+}
+
+.avatar-large-btn::after {
+    border: none;
+}
+
+.field {
+    margin-bottom: 32rpx;
+}
+
+.label {
+    font-size: 28rpx;
+    color: #374151;
+    margin-bottom: 12rpx;
+}
+
+.value {
+    border: 1rpx solid #E5E7EB;
+    border-radius: 16rpx;
+    padding: 24rpx 28rpx;
+    font-size: 28rpx;
+    color: #111827;
+    background: #F9FAFB;
+}
+
+.input-ph {
+    color: #9CA3AF;
 }
 
 .save-section {
-    margin-top: 32rpx;
+    margin: 32rpx 32rpx 0;
 }
 
-/* 与第一张图一致的竖向渐变按钮 */
+/* 仅在资料完善卡片内让按钮与输入框等宽 */
+#profile-card .save-section {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .save-btn {
     width: 100%;
-    height: 88rpx;
-    background: linear-gradient(90deg, #7C3AED 0%, #2563EB 100%);
+    height: 96rpx;
+    background: linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%);
     border: none;
     border-radius: 999rpx;
     padding: 0;
     margin: 0;
-    box-shadow: 0 10rpx 24rpx rgba(124, 58, 237, 0.25);
+    box-shadow: 0 12rpx 24rpx rgba(79, 70, 229, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plus-icon {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 40rpx;
+    height: 40rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #4f46e5;
+    color: #fff;
+    font-size: 32rpx;
+    font-weight: 700;
+    border: 4rpx solid #fff;
+}
+
+.form-line {
+    display: flex;
 }
 
 .save-text {
-    font-size: 30rpx;
+    font-size: 32rpx;
     font-weight: 600;
     letter-spacing: 1rpx;
     color: #fff;
-}
-
-/* 输入框占位样式与细节优化 */
-.input-ph {
-    color: #9CA3AF;
 }

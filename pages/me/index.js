@@ -6,7 +6,6 @@ Page({
     maskedUserId: '',
     pendingAvatarUrl: '',
     pendingNickName: '',
-    showProfileForm: false,
   },
 
   onLoad() {
@@ -31,17 +30,6 @@ Page({
   onNicknameInput(e) {
     const v = (e && e.detail && e.detail.value) ? e.detail.value : '';
     this.setData({ pendingNickName: v });
-  },
-
-  scrollToProfileCard() {
-    if (this.data.userInfo) return;
-    this.setData({ showProfileForm: true });
-  },
-
-  onAccountCardTap() {
-    if (!this.data.userInfo) {
-      this.scrollToProfileCard();
-    }
   },
 
   async onSubmitProfile() {
