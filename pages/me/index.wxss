@@ -114,7 +114,7 @@
     margin: 0 auto;
     box-shadow: 0 12rpx 24rpx rgba(79,70,229,.25);
     border-radius: 50%;
-    overflow: hidden;
+    overflow: visible; /* 改为visible，让加号完整显示 */
 }
 
 .avatar-large {
@@ -134,8 +134,8 @@
 
 .avatar-plus {
     position: absolute;
-    right: 0rpx;
-    bottom: 0rpx;
+    right: -8rpx;  /* 向右偏移，避免被裁剪 */
+    bottom: -8rpx; /* 向下偏移，避免被裁剪 */
     width: 48rpx;
     height: 48rpx;
     border-radius: 24rpx;
@@ -147,6 +147,7 @@
     font-weight: 700;
     font-size: 32rpx;
     box-shadow: 0 6rpx 12rpx rgba(79, 70, 229, 0.25);
+    z-index: 10; /* 确保在最上层显示 */
 }
 
 .avatar-large-btn::after {
