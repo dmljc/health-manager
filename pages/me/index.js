@@ -61,14 +61,6 @@ Page({
     }
   },
 
-  onLogoutAndClear() {
-    try {
-      wx.clearStorageSync();
-    } catch (_) {}
-    this.setData({ userInfo: null });
-    wx.showToast({ title: '已清缓存并退出', icon: 'none' });
-  },
-
   ensureCloudReady() {
     try {
       if (wx.cloud && !wx.cloud._inited) {
@@ -80,13 +72,6 @@ Page({
     }
   },
 
-  maskOpenId(id) {
-    if (!id) return '';
-    const s = String(id);
-    if (s.length <= 10) return s;
-    return `${s.slice(0, 6)}...${s.slice(-4)}`;
-  },
-
   async fetchUserId() {
     try {
       const ok = this.ensureCloudReady();
@@ -95,7 +80,7 @@ Page({
       const doc = res && res.result && res.result.data ? res.result.data : null;
       const id = doc && doc.userId ? doc.userId : '';
       if (id) {
-        this.setData({ userId: id, maskedUserId: this.maskOpenId(id) });
+        this.setData({ userId: id });
       }
     } catch (_) {}
   },

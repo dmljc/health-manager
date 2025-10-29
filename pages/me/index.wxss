@@ -17,19 +17,36 @@
     /* 让白色卡片上移，形成重叠效果 */
 }
 
-.hero-title {
-    font-size: 48rpx;
-    font-weight: 700;
-    letter-spacing: 2rpx;
-    margin-bottom: 16rpx;
+/* 头像容器 - 确保登录前后样式一致 */
+.avatar-container {
+    margin-bottom: 24rpx;
 }
 
-.wxid-line {
+/* 卡片通用样式调整 */
+.card {
+    background: #fff;
+    border-radius: 32rpx;
+    padding: 32rpx;
+    box-shadow: 0 20rpx 40rpx rgba(17, 24, 39, 0.08);
+    margin: 0 32rpx 24rpx;
+    position: relative;
+    /* 确保在 Hero 之上 */
+    z-index: 10;
+}
+
+/* 微信昵称区域 - 位置固定 */
+.nickname-section {
     display: inline-flex;
     align-items: center;
     gap: 12rpx;
     color: #E0E7FF;
     font-size: 26rpx;
+    min-height: 40rpx; /* 固定高度，确保位置不变 */
+}
+
+.nickname-pill {
+    min-width: 120rpx; /* 最小宽度，确保占位 */
+    text-align: center;
 }
 
 .wxid-text {
@@ -45,54 +62,6 @@
 .pill-gradient {
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
-}
-
-/* 卡片通用样式调整 */
-.card {
-    background: #fff;
-    border-radius: 32rpx;
-    padding: 32rpx;
-    box-shadow: 0 20rpx 40rpx rgba(17, 24, 39, 0.08);
-    margin: 0 32rpx 24rpx;
-    position: relative;
-    /* 确保在 Hero 之上 */
-    z-index: 10;
-}
-
-/* 已登录的账户信息卡片 */
-.account-card .card-row {
-    display: flex;
-    align-items: center;
-    gap: 24rpx;
-}
-
-.avatar-box {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 60rpx;
-    overflow: hidden;
-}
-
-.avatar {
-    width: 100%;
-    height: 100%;
-}
-
-.info {
-    display: flex;
-    flex-direction: column;
-    gap: 8rpx;
-}
-
-.nick {
-    font-size: 36rpx;
-    font-weight: 600;
-    color: #111827;
-}
-
-.wxid {
-    font-size: 28rpx;
-    color: #6B7280;
 }
 
 /* 资料完善卡片 */
@@ -115,6 +84,11 @@
     margin-bottom: 24rpx;
 }
 
+/* 资料完善卡片中的头像容器 */
+#profile-card .avatar-container {
+    margin-bottom: 0;
+}
+
 .avatar-text {
     display: flex;
     flex-direction: column;
@@ -134,6 +108,13 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+}
+/* 统一头像样式 - Hero区域和资料完善卡片 */
+.avatar-hero {
+    margin: 0 auto;
+    box-shadow: 0 12rpx 24rpx rgba(79,70,229,.25);
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .avatar-large {

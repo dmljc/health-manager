@@ -29,12 +29,6 @@
                 "text": "首页"
             },
             {
-                "pagePath": "pages/medicine/index",
-                "iconPath": "images/icons/meds.png",
-                "selectedIconPath": "images/icons/meds-active.png",
-                "text": "服药"
-            },
-            {
                 "pagePath": "pages/statistics/index",
                 "iconPath": "images/icons/stats.png",
                 "selectedIconPath": "images/icons/stats-active.png",
