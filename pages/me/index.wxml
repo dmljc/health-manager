@@ -10,7 +10,7 @@
       </view>
     </view>
     <view class="nickname-section">
-      <text class="wxid-text">微信昵称：</text>
+      <text class="wxid-text">昵称：</text>
       <view class="pill pill-gradient nickname-pill">{{userInfo ? userInfo.nickName : '登录后显示'}}</view>
     </view>
   </view>
@@ -19,15 +19,12 @@
   <view id="profile-card" class="card" wx:if="{{!userInfo}}">
     <view class="avatar-select">
       <view class="avatar-container">
+        <view class="label">头像</view>
         <button class="avatar-large-btn avatar-hero" hover-class="tap-active" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
           <image wx:if="{{pendingAvatarUrl}}" class="avatar-large" src="{{pendingAvatarUrl}}" mode="aspectFill" />
           <view wx:else class="avatar-large placeholder">👤</view>
           <view class="avatar-plus">+</view>
         </button>
-      </view>
-      <view class="avatar-text">
-        <!-- <view class="card-title">完善资料</view> -->
-        <view class="card-desc">选择头像并填写昵称，保存后用于登录与云端备份。</view>
       </view>
     </view>
 
