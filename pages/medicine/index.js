@@ -400,9 +400,9 @@ Page({
         medicineRemaining: invRemaining,
         medicineColorClass: invColor,
       });
-      } catch (e) {
-        // 刷新列表失败（不影响库存保存）
-      }
+    } catch (e) {
+      // 刷新列表失败（不影响库存保存）
+    }
   },
 
   onLoad(options) {

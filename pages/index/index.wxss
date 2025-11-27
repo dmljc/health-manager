@@ -253,17 +253,14 @@
 }
 
 /* 状态样式 */
-.medicine-normal,
-.checkup-normal {
+.medicine-normal {
     color: var(--success-color);
 }
 
-.medicine-warning,
-.checkup-warning {
+.medicine-warning {
     color: var(--warning-color);
 }
 
-.medicine-danger,
-.checkup-danger {
+.medicine-danger {
     color: var(--danger-color);
 }
